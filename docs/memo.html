@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-06-28 Mon 23:07 -->
+<!-- 2021-07-07 Wed 22:16 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DHL in OCaml</title>
@@ -232,36 +232,83 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org6551a92">1. ノードの管理</a></li>
+<li><a href="#orgfcafad0">1. logo</a></li>
+<li><a href="#org98bbf4e">2. マッチングのための中間命令</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org6551a92" class="outline-2">
-<h2 id="org6551a92"><span class="section-number-2">1</span> ノードの管理</h2>
+<div id="outline-container-orgfcafad0" class="outline-2">
+<h2 id="orgfcafad0"><span class="section-number-2">1</span> logo</h2>
 <div class="outline-text-2" id="text-1">
-<dl class="org-dl">
-<dt>黒丸</dt><dd>本物のノード</dd>
-<dt>白丸</dt><dd>間接参照のためのノード</dd>
-</dl>
 
-<p>
-とする
+<div id="orgb006eac" class="figure">
+<p><object type="image/svg+xml" data="./Dhl-logo.svg" class="org-svg">
+Sorry, your browser does not support SVG.</object>
 </p>
+</div>
+</div>
+</div>
 
-<p>
-ノードはそれぞれ <i>（白丸を介して間接的に）いくつの黒丸から指されているか？</i>
-という <b>参照カウント</b> を持つ
-</p>
-<ul class="org-ul">
-<li>いくつのノードから指されているか？という <b>普通の参照カウントとは少し異なる</b></li>
-</ul>
+
+<div id="outline-container-org98bbf4e" class="outline-2">
+<h2 id="org98bbf4e"><span class="section-number-2">2</span> マッチングのための中間命令</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+<pre class="src src-ocaml">(** レジスタ番号 *)       
+type reg_i = int;
+
+(** ファンクタ:= (アトム名, リンクの数) *)
+type functor_ = string * int
+
+(** ルール左辺におけるマッチングのための中間命令 *)
+type lhs_inst =
+  | PeakAtom reg_i functor_
+  (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
+      - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
+      - not failable and possibly rewind
+   *)
+
+  | CheckFunctor reg_i functor_ 
+  (** reg_i に格納したアトムのファンクタが functor_ であることを確認する
+      - failable and does not rewind
+   *)
+
+  | CheckIndeg reg_i int
+  (** reg_i に格納したアトムの参照カウンタの値が int であることを確認する
+      - 局所リンクに必要なチェック
+      - failable and does not rewind
+   *)
+
+  | Deref reg_i reg_i int
+  (** [Deref dst_reg_i src_reg_i port_i] は レジスタ [src_reg_i] が参照するアトムの 
+      [port_i] 番目の引数をトラバースしてその先に接続されているシンボルアトムへの参照を
+      レジスタ [dst_reg_i] に格納する
+      - not failable and does not rewind
+   *)
+
+  | CheckRefEq reg_i reg_i
+  (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
+      レジスタ [reg_j] に格納されているアドレスが等しいことを確認する
+      - failable and does not rewind
+   *)
+
+  | CheckRefNeq reg_i reg_i
+(** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
+      レジスタ [reg_j] に格納されているアドレスが異なることを確認する
+      - failable and does not rewind
+ *)
+
+type lhs_insts = lhs_inst list
+
+</pre>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Jin SANO</p>
-<p class="date">Created: 2021-06-28 Mon 23:07</p>
+<p class="date">Created: 2021-07-07 Wed 22:16</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

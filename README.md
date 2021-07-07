@@ -1,6 +1,9 @@
 # dhl-in-ocaml
 
+![logo](./docs/DHL-logo.svg)
+
 A minimal compiler and runtime for a language based on graph rewriting.
+
 
 ## Getting Started
 ### Prerequisites

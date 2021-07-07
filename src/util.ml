@@ -96,3 +96,6 @@ let rec fold_opt f unit = function
   | [] -> Some unit
   | h::t -> f unit h >>= flip (fold_opt f) t
 							   
+(* キーがリストの末尾から何番目に存在するかを末尾から辿る *)
+let rec assoc_ri x = assoc_i x <. List.rev
+    

@@ -99,6 +99,7 @@ let clean_atom_list atom_list =
   in List.iter clean_atom atom_list
 
 
+(* 自由リンクの参照カウンタの値を free_indeg_diffs で加算する *)
 let update_free_indeg free2addr free_indeg_diffs (x, _) =
   let node_ref = List.assoc x free2addr in
   let free_indeg_diff = List.assoc x free_indeg_diffs in

@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-07-06 Tue 19:53 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DHL in OCaml</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Jin SANO" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">DHL in OCaml
+<br />
+<span class="subtitle">A minimal interpreter of a language based on graph rewriting</span>
+</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgb30e2b0">1. Docs</a>
+<ul>
+<li><a href="#orgfc39ea5">1.1. About</a>
+<ul>
+<li><a href="#orgd7a1d10">1.1.1. Getting Started</a></li>
+<li><a href="#org9ba54db">1.1.2. Usage</a></li>
+</ul>
+</li>
+<li><a href="#org512788c">1.2. 実装の概要</a>
+<ul>
+<li><a href="#org38d78ea">1.2.1. LOC</a></li>
+<li><a href="#org5146605">1.2.2. Dependencies</a></li>
+<li><a href="#org25be7e9">1.2.3. プログラムの簡単な解説</a></li>
+<li><a href="#org5e0629d">1.2.4. 実行オプション一覧</a></li>
+</ul>
+</li>
+<li><a href="#orgf980fc8">1.3. アトムのメモリ管理に関して</a>
+<ul>
+<li><a href="#org5935767">1.3.1. アトムが持つべき情報</a></li>
+<li><a href="#org2ecb9df">1.3.2. トラバースに関して</a></li>
+<li><a href="#org8863acd">1.3.3. Push に関して</a></li>
+<li><a href="#org90080fc">1.3.4. リダイレクトにおける参照カウンタの再設定と不正な間接循環参照の検出と解放できる間接参照の特定アルゴリズム</a></li>
+</ul>
+</li>
+<li><a href="#orge060314">1.4. デバッグ用の Dumper</a></li>
+<li><a href="#org05a0e8f">1.5. Dump.dump に関して</a></li>
+<li><a href="#orgec3e7d1">1.6. マッチングの戦略</a>
+<ul>
+<li><a href="#orgb0d4777">1.6.1. マッチングを行ったアトムのアドレスの集合</a></li>
+<li><a href="#org0163ff1">1.6.2. リンクからアドレスへの写像</a></li>
+<li><a href="#org4df359d">1.6.3. 自由リンクから入次数への写像</a></li>
+</ul>
+</li>
+<li><a href="#orgd8e2fa6">1.7. メモ</a></li>
+<li><a href="#org60de70b">1.8. あらすじ</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb30e2b0" class="outline-2">
+<h2 id="orgb30e2b0"><span class="section-number-2">1</span> Docs</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgfc39ea5" class="outline-3">
+<h3 id="orgfc39ea5"><span class="section-number-3">1.1</span> About</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+A minimal implementation of a graph rewriting language Directed HyperLMNtal.
+</p>
+</div>
+
+<div id="outline-container-orgd7a1d10" class="outline-4">
+<h4 id="orgd7a1d10"><span class="section-number-4">1.1.1</span> Getting Started</h4>
+<div class="outline-text-4" id="text-1-1-1">
+</div>
+<ol class="org-ol">
+<li><a id="orgca89aa8"></a>Prerequisites<br />
+<div class="outline-text-5" id="text-1-1-1-1">
+<ul class="org-ul">
+<li><a href="https://opam.ocaml.org/">opam</a></li>
+</ul>
+</div>
+</li>
+
+<li><a id="orgef0dbf2"></a>Installation<br />
+<div class="outline-text-5" id="text-1-1-1-2">
+<div class="org-src-container">
+<pre class="src src-sh" id="org286bbda">git clone https://github.com/sano-jin/dhl-in-ocaml
+cd dhl-in-ocaml
+opam install .
+opam exec -- dune build
+</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+
+<div id="outline-container-org9ba54db" class="outline-4">
+<h4 id="org9ba54db"><span class="section-number-4">1.1.2</span> Usage</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<p>
+example/append.dhl  
+</p>
+<pre class="example" id="org47fe625">
+% A list appending example. 
+
+% The initial graph.
+append(cons(a, cons(b, nil)), cons(c, nil)).
+
+% append_cons @@
+R -&gt; append(cons(H, T), L)
+:- R -&gt; cons(H, append(T, L)).
+
+% append_nil @@
+R -&gt; append(nil, L)
+:- R -&gt; L.
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-sh" id="org9d9e950">./dhl example/append.dhl -t
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-sh">0: append(cons(a, cons(b, nil)), cons(c, nil))
+1: cons(a, append(cons(b, nil), cons(c, nil)))
+2: cons(a, cons(b, append(nil, cons(c, nil))))
+3: cons(a, cons(b, L0)). L0 -&gt; L1. L1 -&gt; cons(c, nil)
+Final state: cons(a, cons(b, cons(c, nil)))
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org512788c" class="outline-3">
+<h3 id="org512788c"><span class="section-number-3">1.2</span> 実装の概要</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+500 LOC 程度の非常に小さいプログラムである
+（ことを目指していた）
+</p>
+</div>
+
+<div id="outline-container-org38d78ea" class="outline-4">
+<h4 id="org38d78ea"><span class="section-number-4">1.2.1</span> LOC</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<div class="org-src-container">
+<pre class="src src-sh">-------------------------------------------------------------------------------
+match.ml                            15             19             76
+redir.ml                            25             26             72
+util.ml                             25              7             66
+breakdown.ml                        24             17             60
+parser.mly                          20             12             59
+main.ml                             11              8             50
+dump.ml                             10             13             48
+pushout.ml                          16              2             44
+link_check.ml                       16             11             39
+vm.ml                               24             46             39
+alpha.ml                            14             11             34
+lexer.mll                           10              8             34
+eval.ml                              5              5             16
+syntax.ml                            2              3              9
+-------------------------------------------------------------------------------
+SUM:                               217            188            646
+-------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5146605" class="outline-4">
+<h4 id="org5146605"><span class="section-number-4">1.2.2</span> Dependencies</h4>
+<div class="outline-text-4" id="text-1-2-2">
+
+<div id="orged4609b" class="figure">
+<p><object type="image/svg+xml" data="./output.svg" class="org-svg">
+Sorry, your browser does not support SVG.</object>
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org25be7e9" class="outline-4">
+<h4 id="org25be7e9"><span class="section-number-4">1.2.3</span> プログラムの簡単な解説</h4>
+<div class="outline-text-4" id="text-1-2-3">
+</div>
+<ol class="org-ol">
+<li><a id="org1221b41"></a>Utility functions<br />
+<div class="outline-text-5" id="text-1-2-3-1">
+<dl class="org-dl">
+<dt>util.ml	</dt><dd>Some utility functions</dd>
+</dl>
+</div>
+</li>
+
+<li><a id="orgdcf9e5c"></a>Compiler<br />
+<ol class="org-ol">
+<li><a id="orge9d515d"></a>Lexical/Syntax analysis<br />
+<div class="outline-text-6" id="text-1-2-3-2-1">
+<dl class="org-dl">
+<dt>syntax.ml</dt><dd>The abstract syntax definition</dd>
+<dt>lexer.mll</dt><dd>Defines a token for lexing</dd>
+<dt>parser.mly </dt><dd>Defines a grammar for parsing</dd>
+</dl>
+</div>
+</li>
+
+<li><a id="orgc07a27a"></a>Semantic analysis<br />
+<div class="outline-text-6" id="text-1-2-3-2-2">
+<dl class="org-dl">
+<dt>alpha.ml</dt><dd>Convert local link names to fresh ids and partition atoms and rules</dd>
+<dt>link_check.ml</dt><dd>Collect link information and check them</dd>
+<dt>breakdown.ml</dt><dd>Check rule conditions and break down atoms</dd>
+</dl>
+</div>
+</li>
+</ol>
+</li>
+
+<li><a id="orgd88e819"></a>VM<br />
+<div class="outline-text-5" id="text-1-2-3-3">
+<dl class="org-dl">
+<dt>vm.ml	</dt><dd>Type definition of an atom and pretty printer for its multi-set</dd>
+<dt>match.ml	</dt><dd>Perform graph pattern matching</dd>
+<dt>redir.ml	</dt><dd>Detect invalid circular redirections and set reference counters</dd>
+<dt>pushout.ml</dt><dd>Generate and push atoms</dd>
+<dt>eval.ml	</dt><dd>The one step reducer</dd>
+</dl>
+</div>
+</li>
+
+<li><a id="org08a9e50"></a>Repl<br />
+<div class="outline-text-5" id="text-1-2-3-4">
+<dl class="org-dl">
+<dt>main.ml	</dt><dd>File loader and the main execution loop</dd>
+</dl>
+</div>
+</li>
+</ol>
+</div>
+
+<div id="outline-container-org5e0629d" class="outline-4">
+<h4 id="org5e0629d"><span class="section-number-4">1.2.4</span> 実行オプション一覧</h4>
+<div class="outline-text-4" id="text-1-2-4">
+<div class="org-src-container">
+<pre class="src src-sh" id="orge16bd78">./dhl -help
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-sh">append [-t] [-v] &lt;file1&gt;
+  -t Trace
+  -v Output debug information
+  -help  Display this list of options
+  --help  Display this list of options
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgf980fc8" class="outline-3">
+<h3 id="orgf980fc8"><span class="section-number-3">1.3</span> アトムのメモリ管理に関して</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+性能を出すためには，局所リンクでマッチしたアトムや Indirection アトム
+（自由リンクでマッチしてシンボルアトムを置き換える）を毎回アトムリストから削除するよりも，
+Void アトムで更新して，マッチングの際にアトムリストからトラバースする時にアトムリストから取り除き，
+メモリ領域を解放してやる方が良いかもしれない
+</p>
+<ul class="org-ul">
+<li>アトムリストの位置をアトムに付加しておいて，その情報をもとに削除するのが一番手っ取り早い（気がしてきた）</li>
+</ul>
+
+
+<p>
+現状の方針
+</p>
+<ul class="org-ul">
+<li>Indirection アトムはアトムリストに登録しない</li>
+<li>局所リンクでマッチしたアトムは毎回アトムリストから除去する</li>
+</ul>
+</div>
+
+<div id="outline-container-org5935767" class="outline-4">
+<h4 id="org5935767"><span class="section-number-4">1.3.1</span> アトムが持つべき情報</h4>
+<div class="outline-text-4" id="text-1-3-1">
+</div>
+<ol class="org-ol">
+<li><a id="org92958bd"></a>シンボルアトムの持つべき情報<br />
+<div class="outline-text-5" id="text-1-3-1-1">
+<ul class="org-ul">
+<li>アトム名</li>
+<li>引数のリンク（ポインタ）を m 本</li>
+<li>他の（Indirection アトムを経由するものも含めた）シンボルアトムからの被参照数
+<ul class="org-ul">
+<li>アトムリストからの参照はカウントしない</li>
+<li>アトムリストからは常に辿れるはず（べき）なので</li>
+</ul></li>
+</ul>
+</div>
+</li>
+
+<li><a id="org2afad20"></a>Indirection アトムの持つべき情報<br />
+<div class="outline-text-5" id="text-1-3-1-2">
+<ul class="org-ul">
+<li>引数のリンクを一本（ポインタ）</li>
+<li>他の（Indirection アトムを経由するものも含めた）シンボルアトムからの被参照数
+<ul class="org-ul">
+<li>アトムリストからは参照されない前提</li>
+<li>他のアトムが（他のアトムを参照しようとして間接的に）参照している場合は，
+この Indirection アトムは消去できない</li>
+</ul></li>
+<li>Indirection アトムは他のシンボルアトムからの被参照数がゼロの場合はそもそも生成しない
+<ul class="org-ul">
+<li>アトムリストにも登録しない</li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+
+
+<div id="outline-container-org2ecb9df" class="outline-4">
+<h4 id="org2ecb9df"><span class="section-number-4">1.3.2</span> トラバースに関して</h4>
+<div class="outline-text-4" id="text-1-3-2">
+</div>
+<ol class="org-ol">
+<li><a id="orgf4cb24a"></a>アトムリストの参照から辿り始めた場合<br />
+<div class="outline-text-5" id="text-1-3-2-1">
+<ul class="org-ul">
+<li>必ずシンボルアトムを dereference するべき</li>
+<li>Indirection アトムはアトムリストに登録しないので</li>
+</ul>
+</div>
+</li>
+
+<li><a id="org9d03b89"></a>アトムの引数のリンク（ポインタ）から辿り始めた場合<br />
+<div class="outline-text-5" id="text-1-3-2-2">
+<ul class="org-ul">
+<li>参照先がシンボルアトムなら普通にマッチする</li>
+<li>参照先が Indirection アトムだったらその先を辿る
+<ul class="org-ul">
+<li>シンボルアトムから辿った場合は，Indirection アトムの被参照数を1減らす
+<ul class="org-ul">
+<li>アトムの引数からの参照の分</li>
+<li>これで Indirection アトムの被参照数がゼロになったらメモリを解放</li>
+<li>Indirection アトムからたどっているときは，その被参照数分だけ減算する必要がある</li>
+</ul></li>
+<li>Indirection アトムを辿っているうちに普通のアトムに辿り着いたら
+<ul class="org-ul">
+<li>そのアトムへの参照で今まで辿ってきた 0 個以上の Indirection アトムも含めて元のアトムの引数を更新する</li>
+</ul></li>
+<li>Indirection アトムを辿っているうちに自分自身に辿り着くということはあるか？
+（Indirection のみでループしうるか？）
+<ul class="org-ul">
+<li>設計が正しければ，そんなことは起きない</li>
+<li>アトムの引数からは必ずアトムが一つ辿れるはずなので</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+
+
+
+<div id="outline-container-org8863acd" class="outline-4">
+<h4 id="org8863acd"><span class="section-number-4">1.3.3</span> Push に関して</h4>
+<div class="outline-text-4" id="text-1-3-3">
+<ul class="org-ul">
+<li>被参照数がゼロになるような Indirection はそもそも生成しない</li>
+<li>Indirection の左辺の自由リンクは局所リンクでマッチしたアトムと同じく，
+アトムリストから除去する
+<ul class="org-ul">
+<li>従って，Indirection アトムはアトムリストに登録されない</li>
+<li>従って，アトムの参照カウンタはシンボルアトムからの（間接参照も含む）参照数とアトムリストからの参照の分
+の和よりも大きくなることはない
+<ul class="org-ul">
+<li>つまり，参照カウンタの値がゼロになったら破棄して良い（それ以外に参照しているものはいないことが保証される）</li>
+</ul></li>
+</ul></li>
+</ul>
+
+
+<ul class="org-ul">
+<li>リダイレクションを行っている際は，リダイレクションの左辺の自由リンクがマッチしたアトムの被参照数を
+右辺がマッチした自由リンクのアトムの被参照数に加算する
+<ul class="org-ul">
+<li>Indirection はトラバースするので，マッチングを行う前の時点では必ずこれはシンボルアトムである</li>
+<li>リダイレクションによって，これは Indirection アトムになりうる．その場合問題ではないのか？
+<ul class="org-ul">
+<li>循環するリダイレクションならば，被参照数はゼロであることが保証されている
+<ul class="org-ul">
+<li>被参照数がゼロのときは，消去を行うので問題ではない？</li>
+<li>（そもそも本当に書き換え後も被参照数がゼロであることを保証できているのか？という問題もある）</li>
+<li>リダイレクションがひとつの場合ならこれで良いが，二つ以上になるとうまくいかない（かも）
+<ul class="org-ul">
+<li>同値類で分類してチェックする？</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org90080fc" class="outline-4">
+<h4 id="org90080fc"><span class="section-number-4">1.3.4</span> リダイレクトにおける参照カウンタの再設定と不正な間接循環参照の検出と解放できる間接参照の特定アルゴリズム</h4>
+<div class="outline-text-4" id="text-1-3-4">
+<p>
+<a href="https://gitlab.ueda.info.waseda.ac.jp/sano/reference-counter-problem">https://gitlab.ueda.info.waseda.ac.jp/sano/reference-counter-problem</a> を参照
+</p>
+
+<p>
+アルゴリズム概要
+</p>
+<ol class="org-ol">
+<li>間接参照で置き換えるノードからの参照の分だけ，参照カウンタを減算しておく</li>
+<li>間接参照で置き換えるノードを任意に選択する</li>
+<li>間接参照を順方向にトラバースする（辿ったノードには印をつけておく）
+<ol class="org-ol">
+<li>循環を検出した場合
+<ol class="org-ol">
+<li>そのノードから間接参照の逆辺を全て辿って，全ての参照カウンタの値がゼロになっていることを確認する（辿ったノードには印をつけておく）
+<ul class="org-ul">
+<li>定理：連結した間接参照のサブグラフにおいて循環が存在する場合，その任意のノードから順方向にトラバースして必ず循環が検知できる</li>
+<li>間接ノードはポインタを一つしか持たないため</li>
+</ul></li>
+</ol></li>
+<li>循環を検出しないまま，シンボルアトムを参照する間接ノードに到達した場合
+<ol class="org-ol">
+<li>そのノードから逆辺を深さ優先探索して，帰りがけに被参照数の和でノードの被参照数を更新していく（辿ったノードには印をつけておく）</li>
+<li>ただ，path-compression もしたい</li>
+</ol></li>
+</ol></li>
+<li>辿っていないノードがある限り 2 から繰り返し</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-orge060314" class="outline-3">
+<h3 id="orge060314"><span class="section-number-3">1.4</span> デバッグ用の Dumper</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+<code>-v</code> オプションをつけると，アトムリストをダンプする
+</p>
+
+<ul class="org-ul">
+<li>アトムリスト上に存在するアトムは 0 から連続する整数のアドレスをふって表示する
+<ul class="org-ul">
+<li>全てシンボルアトムであるべき
+（Indirection アトムはアトムリストに登録しない）</li>
+</ul></li>
+<li>アトムリストにないアトムは負数のアドレスを振って表示する
+<ul class="org-ul">
+<li>全て Indirection アトムであるべき
+（シンボルアトムは必ずアトムリストに登録されているべきなので）</li>
+</ul></li>
+</ul>
+
+
+<div class="org-src-container">
+<pre class="src src-sh" id="org6131c0e">./dhl example/append.dhl -t -v
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-sh">0: 
+#0 -&gt; 1 : nil []
+#1 -&gt; 1 : c []
+#2 -&gt; 1 : cons [#1, #0]
+#3 -&gt; 1 : nil []
+#4 -&gt; 1 : b []
+#5 -&gt; 1 : cons [#4, #3]
+#6 -&gt; 1 : a []
+#7 -&gt; 1 : cons [#6, #5]
+#8 -&gt; 0 : append [#7, #2]
+
+1: 
+#0 -&gt; 1 : append [#6, #3]
+#1 -&gt; 1 : nil []
+#2 -&gt; 1 : c []
+#3 -&gt; 1 : cons [#2, #1]
+#4 -&gt; 1 : nil []
+#5 -&gt; 1 : b []
+#6 -&gt; 1 : cons [#5, #4]
+#7 -&gt; 1 : a []
+#8 -&gt; 0 : cons [#7, #0]
+
+2: 
+#0 -&gt; 1 : append [#5, #4]
+#1 -&gt; 1 : cons [#6, #0]
+#2 -&gt; 1 : nil []
+#3 -&gt; 1 : c []
+#4 -&gt; 1 : cons [#3, #2]
+#5 -&gt; 1 : nil []
+#6 -&gt; 1 : b []
+#7 -&gt; 1 : a []
+#8 -&gt; 0 : cons [#7, #1]
+
+3: 
+#-1 -&gt; 1 : -&gt; [#3]
+#0 -&gt; 1 : cons [#4, #-1]
+#1 -&gt; 1 : nil []
+#2 -&gt; 1 : c []
+#3 -&gt; 1 : cons [#2, #1]
+#4 -&gt; 1 : b []
+#5 -&gt; 1 : a []
+#6 -&gt; 0 : cons [#5, #0]
+
+Final state: 
+#0 -&gt; 1 : cons [#4, #3]
+#1 -&gt; 1 : nil []
+#2 -&gt; 1 : c []
+#3 -&gt; 1 : cons [#2, #1]
+#4 -&gt; 1 : b []
+#5 -&gt; 1 : a []
+#6 -&gt; 0 : cons [#5, #0]
+
+</pre>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-org05a0e8f" class="outline-3">
+<h3 id="org05a0e8f"><span class="section-number-3">1.5</span> Dump.dump に関して</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+トポロジカルソートを行う過程で，全ての到達可能なアトムのリストを返すため，
+Indirection アトムも明示的に dump するようになっている
+</p>
+
+<p>
+今はデバッグに便利そうだから放っておいているが，
+あとで Indirection アトムは隠蔽するように変更しても良いかもしれない
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgec3e7d1" class="outline-3">
+<h3 id="orgec3e7d1"><span class="section-number-3">1.6</span> マッチングの戦略</h3>
+<div class="outline-text-3" id="text-1-6">
+<div class="org-src-container">
+<pre class="src src-ocaml" id="org31abf51">type env = {
+  matched_atoms: node_ref list;
+  (** all the addresses of the matched atoms on lhs *)
+
+  local2addr: (int * node_ref) list;
+  free2addr: (string * node_ref) list;
+}
+</pre>
+</div>
+
+<p>
+全体としては，3本のリスト（スタック）を持つことになる（と思われる）
+</p>
+</div>
+
+<div id="outline-container-orgb0d4777" class="outline-4">
+<h4 id="orgb0d4777"><span class="section-number-4">1.6.1</span> マッチングを行ったアトムのアドレスの集合</h4>
+<div class="outline-text-4" id="text-1-6-1">
+<p>
+マッチングを行ったアトムのアドレスは <code>matched_atoms</code> に追加する
+</p>
+<ul class="org-ul">
+<li>これはアトムへの非単射的なマッチングを防ぐため</li>
+<li>ファンクタごとに分類した方が効率的である</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org0163ff1" class="outline-4">
+<h4 id="org0163ff1"><span class="section-number-4">1.6.2</span> リンクからアドレスへの写像</h4>
+<div class="outline-text-4" id="text-1-6-2">
+<p>
+マッチングに成功したリンクは対応するノードのアドレスとともに持っておき，
+次回からはアトムリストから探索するのではなく dereference を行う
+</p>
+<ul class="org-ul">
+<li>この，Dereference を行うかの判断は静的に行うことができる
+（コンパイラのタスクである）</li>
+</ul>
+
+<p>
+それぞれ，
+</p>
+<ul class="org-ul">
+<li>マッチングに成功した局所リンクは対応するノードのアドレスとともに <code>local2addr</code> に登録する</li>
+<li>マッチングに成功した自由リンクは対応するノードのアドレスとともに <code>free2addr</code> に登録する</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org4df359d" class="outline-4">
+<h4 id="org4df359d"><span class="section-number-4">1.6.3</span> 自由リンクから入次数への写像</h4>
+<div class="outline-text-4" id="text-1-6-3">
+<p>
+これが計算されるのはマッチング終了間際（マッチング自体には成功して，自由リンクの入次数のチェックを行う前）である．
+</p>
+
+<p>
+ただし，失敗したらバックトラックを行う必要があるために，あくまでマッチングの最後として行う必要がある
+</p>
+<ul class="org-ul">
+<li>マッチングと分離して，マッチング後に行うようにすることはできない</li>
+
+<li>自由リンクの入次数チェックを行う前に破壊的代入を行なってしまい，
+チェックを行った結果，ダメだったら再度正負を反転した入次数の差分を代入して戻す</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgd8e2fa6" class="outline-3">
+<h3 id="orgd8e2fa6"><span class="section-number-3">1.7</span> メモ</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+（参照カウンタ方式でない）Garbage collector を必要としないハイパーグラフ書き換え言語
+</p>
+
+<p>
+サブグラフの共有，循環参照を扱うことももちろんできる
+</p>
+<ul class="org-ul">
+<li>参照カウンタで GC を行う言語では循環参照は扱えない</li>
+</ul>
+
+<p>
+参照カウンタは持っているものの，普通のアトムは GC をするわけではない
+</p>
+<ul class="org-ul">
+<li>実は通常のアトムにおける「入次数」の値は普通の参照カウンタの値と少し異なる
+<ul class="org-ul">
+<li>Indirection アトムでないアトムからの参照数を数える</li>
+<li>Indirection アトムを経由するものも，それぞれ独立した参照として数える</li>
+</ul></li>
+<li>Indirection アトムは除去する必要があるが，これも（意味論上は）循環する可能性がある</li>
+<li>参照カウンタのみで循環する（可能性がある）Indirection を検知してこれをメモリリークさせずに扱うのはちょっとした課題</li>
+</ul>
+
+<p>
+局所リンクのパターンマッチはもしかしたら他の（グラフ書き換え）言語にはあまりない話かもしれない
+</p>
+<ul class="org-ul">
+<li>全称量化マッチングに繋がる話</li>
+</ul>
+
+<p>
+参照カウンタに関しても，線形性解析などによりかなりの部分を除去可能だと思われる
+</p>
+<ul class="org-ul">
+<li>最適化の余地はたくさんある</li>
+</ul>
+
+<p>
+どのみち参照カウンタは持っているわけだし，（参照カウンタ方式での）Garbage collection を組み込むのもそんなに不自然な話ではないと思う
+</p>
+<ul class="org-ul">
+<li>ただし，言語そのものに組み込む必要はない（しても良いけど）
+<ul class="org-ul">
+<li>例えば「GC 膜」とかいうのを用意してやって，その膜の中のアトムは外からの参照からたどれないなら消去する……とか</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org60de70b" class="outline-3">
+<h3 id="org60de70b"><span class="section-number-3">1.8</span> あらすじ</h3>
+<div class="outline-text-3" id="text-1-8">
+<p>
+プログラミング言語はメモリの扱いに関してだけでも色々ある．
+</p>
+
+<p>
+いわゆる「普通の言語」をざっと見ていくと，
+</p>
+
+<ul class="org-ul">
+<li>C (C++) 言語は <b>そもそもメモリ安全でない</b></li>
+<li>Rust は「所有権」により，基本的には <b>1 to 1 の参照に制限する</b>
+<ul class="org-ul">
+<li>そうはいかない場合は参照カウンタに任せる事になる（か，あるいは <code>unsafe</code> ）</li>
+</ul></li>
+<li>参照カウンタ方式の場合は， <b>n to 1 の参照が可能</b> であるが， <b>循環参照できない</b>
+<ul class="org-ul">
+<li>（できないというのは言い過ぎかもしれないが）</li>
+<li>メモリリークする可能性がある</li>
+<li>正格な関数型言語は参照カウンタだけでも実装可能だったりはする</li>
+<li>C++, Rust では基本的にはここまで</li>
+<li>（C++er とかからすると無視できないコストのようだが）より強力な GC よりもずっと低コスト
+<ul class="org-ul">
+<li>Stop the world する必要はない</li>
+</ul></li>
+</ul></li>
+<li>多くの関数型言語，Java などでは 参照カウンタよりも強力な Garbage collector を用いる
+<ul class="org-ul">
+<li>関数型言語の場合は，Garbage collector がないと実装できない（funarg problem）</li>
+<li><b>n to 1 の参照・循環参照が可能</b> である</li>
+<li>ただし，コストは存在する
+<ul class="org-ul">
+<li>（基本的には）プログラム全体を停止させてゴミ集めする</li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p>
+結論として，
+</p>
+
+<ul class="org-ul">
+<li>（参照カウンタ方式よりも強力な）Garbage collector を用いずに</li>
+<li>循環参照を許し</li>
+<li>メモリリークせず</li>
+<li>メモリ安全</li>
+</ul>
+
+<p>
+という言語は（当たり前？だが）存在しない．
+</p>
+
+<p>
+かたやグラフ書き換え言語というものがある．
+</p>
+
+<p>
+グラフ書き換え言語にも色々種類がある
+</p>
+
+<dl class="org-dl">
+<dt>Groove, agg, progres, GReAT, GrGen.Net</dt><dd>多分ほとんどビジュアル（プログラミング）寄りでプログラマブルという感じはあんまりしないもの多数</dd>
+<dt>Dactl </dt><dd>根付き有向グラフ書き換え言語
+<ul class="org-ul">
+<li>それぞれのノードは順序付きのポインタを持つ</li>
+<li>論理型・関数型などの言語がトランスパイルされる先のコンパイラにとってのバックエンド言語として設計された
+<ul class="org-ul">
+<li>卒論では「グラフ書き換え言語で言語処理系が実装されたことはない」といったが，アレは真っ赤なウソだった</li>
+<li>わざわざ Dactl にトランスパイルしてから Dactl をコンパイルするよりも，それぞれの言語に合わせた最適化を施しながら（c言語のサブセットなどに）コンパイルする方が有利なので廃れた</li>
+</ul></li>
+<li>根付き有向グラフを扱う
+<ul class="org-ul">
+<li>非連結なグラフは扱えない</li>
+<li>根から辿れないノードは勝手に削除される（Garbage collection）</li>
+<li>ただしこのあたりの仕組みは詳しく書いていない（どういう方式の GC を使うのかなど）</li>
+</ul></li>
+<li>局所リンクのパターンマッチとかは出来ない（と思われる）</li>
+<li>生成するグラフでは循環グラフ・同一ノードを共有などできるが，パターンマッチでそれらのグラフが扱えるのかは不明
+<ul class="org-ul">
+<li>たぶん無理（できるのなら宣伝しそうな気がする）</li>
+</ul></li>
+<li>全体として，基本的には Persistent である
+<ul class="org-ul">
+<li>リダイレクトが出来るので，破壊的代入に近いこともできるが</li>
+</ul></li>
+<li>「マッチしようとしているノードを参照しているものが他にもある」場合も構わずマッチする
+<ul class="org-ul">
+<li>この場合，単にマッチしたノードは削除されずに残る（GC されない）</li>
+<li>このために dangling pointer がおきない</li>
+</ul></li>
+<li>まさに項書き換えのための言語という感じ
+<ul class="org-ul">
+<li>LMNtalに最初触れたときに抱いたイメージそのものだったりする</li>
+</ul></li>
+<li>コントロールトークンがそこそこある
+<ul class="org-ul">
+<li>「計算モデル」という感じでは全然ない</li>
+</ul></li>
+</ul></dd>
+<dt>Regrel</dt><dd>Dactl のグラフ書き換え規則を高階関数のように第一級に扱うようにしたもの</dd>
+<dt>GP2   </dt><dd>有向グラフ書き換え言語
+<ul class="org-ul">
+<li>よりグラフ理論のグラフ寄りのグラフを扱う
+<ul class="org-ul">
+<li>リンクに順序はない</li>
+<li>参照先のノードが削除されたエッジは単に削除される
+<ul class="org-ul">
+<li>このために dangling pointer が起きない</li>
+</ul></li>
+</ul></li>
+<li>制御機構が多い（あまりキレイではない）
+<ul class="org-ul">
+<li>コントロールトークンがたくさん</li>
+</ul></li>
+</ul></dd>
+</dl>
+
+
+<p>
+まとめると，
+</p>
+<ul class="org-ul">
+<li>根付き連結グラフよりも強力なグラフを扱えて</li>
+<li>リンクに順序がついている
+<ul class="org-ul">
+<li>単にエッジを除去するだけではダメ</li>
+</ul></li>
+</ul>
+<p>
+という有向グラフを扱う言語は意外なことにない（と思われる）
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Jin SANO</p>
+<p class="date">Created: 2021-07-06 Tue 19:53</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

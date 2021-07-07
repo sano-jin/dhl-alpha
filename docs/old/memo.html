@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-06-21 Mon 22:00 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A POC of Directed HyperLMNtal</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Jin SANO" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<script type="text/javascript">
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
+<!--/*--><![CDATA[/*><!--*/
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        displayAlign: "center",
+        displayIndent: "0em",
+
+        "HTML-CSS": { scale: 100,
+                        linebreaks: { automatic: "false" },
+                        webFont: "TeX"
+                       },
+        SVG: {scale: 100,
+              linebreaks: { automatic: "false" },
+              font: "TeX"},
+        NativeMML: {scale: 100},
+        TeX: { equationNumbers: {autoNumber: "AMS"},
+               MultLineWidth: "85%",
+               TagSide: "right",
+               TagIndent: ".8em"
+             }
+});
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">A POC of Directed HyperLMNtal</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org7fe287d">1. About</a></li>
+<li><a href="#org69badd2">2. Project overview</a>
+<ul>
+<li><a href="#orgcba8525">2.1. Source programs</a>
+<ul>
+<li><a href="#org09d6194">2.1.1. Compiler</a></li>
+<li><a href="#orgce7546f">2.1.2. VM</a></li>
+<li><a href="#orga39f2a9">2.1.3. Repl</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org08eb24c">3. Syntax</a>
+<ul>
+<li><a href="#org403c1d1">3.1. Identifiers</a></li>
+<li><a href="#org231887f">3.2. Syntax of a process</a></li>
+</ul>
+</li>
+<li><a href="#org0e94107">4. Implementation</a>
+<ul>
+<li><a href="#org454e713">4.1. Syntax</a></li>
+<li><a href="#org9d106c2">4.2. VM</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org7fe287d" class="outline-2">
+<h2 id="org7fe287d"><span class="section-number-2">1</span> About</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+A minimal implementation of a graph rewriting language Directed HyperLMNtal.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org69badd2" class="outline-2">
+<h2 id="org69badd2"><span class="section-number-2">2</span> Project overview</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-orgcba8525" class="outline-3">
+<h3 id="orgcba8525"><span class="section-number-3">2.1</span> Source programs</h3>
+<div class="outline-text-3" id="text-2-1">
+<dl class="org-dl">
+<dt>util.ml	</dt><dd>Some utility functions</dd>
+</dl>
+</div>
+
+<div id="outline-container-org09d6194" class="outline-4">
+<h4 id="org09d6194"><span class="section-number-4">2.1.1</span> Compiler</h4>
+<div class="outline-text-4" id="text-2-1-1">
+</div>
+<ol class="org-ol">
+<li><a id="orgbe93313"></a>Lexical/Syntax analysis<br />
+<div class="outline-text-5" id="text-2-1-1-1">
+<dl class="org-dl">
+<dt>syntax.ml</dt><dd>The abstract syntax definition</dd>
+<dt>lexer.mll</dt><dd>Defines a token for lexing</dd>
+<dt>parser.mly </dt><dd>Defines a grammar for parsing</dd>
+</dl>
+</div>
+</li>
+
+<li><a id="org03dbf29"></a>Semantic analysis<br />
+<div class="outline-text-5" id="text-2-1-1-2">
+<dl class="org-dl">
+<dt>alpha.ml	</dt><dd>Convert local link names to fresh ids and partition atoms and rules</dd>
+<dt>link_check.ml</dt><dd>Collect link information and check them</dd>
+<dt>breakdown.ml</dt><dd>Check rule conditions and break down atoms</dd>
+</dl>
+</div>
+</li>
+</ol>
+</div>
+
+<div id="outline-container-orgce7546f" class="outline-4">
+<h4 id="orgce7546f"><span class="section-number-4">2.1.2</span> VM</h4>
+<div class="outline-text-4" id="text-2-1-2">
+<dl class="org-dl">
+<dt>vm.ml	</dt><dd>Type definition of an atom and pretty printer for its multi-set</dd>
+<dt>match.m	</dt><dd>Perform graph pattern matching</dd>
+<dt>pushout.ml</dt><dd>Generate and push atoms</dd>
+<dt>eval.ml	</dt><dd>The one step reducer</dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-orga39f2a9" class="outline-4">
+<h4 id="orga39f2a9"><span class="section-number-4">2.1.3</span> Repl</h4>
+<div class="outline-text-4" id="text-2-1-3">
+<dl class="org-dl">
+<dt>main.ml	</dt><dd>File loader and the main execution loop</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org08eb24c" class="outline-2">
+<h2 id="org08eb24c"><span class="section-number-2">3</span> Syntax</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org403c1d1" class="outline-3">
+<h3 id="org403c1d1"><span class="section-number-3">3.1</span> Identifiers</h3>
+<div class="outline-text-3" id="text-3-1">
+<dl class="org-dl">
+<dt>Link name</dt><dd>starts from capital letters or <code>_</code>
+<ul class="org-ul">
+<li>e.g. <code>X</code>, <code>Link123</code>, <code>_foo'</code></li>
+<li>we use \(X\) or \(Y\) to denote them in the following description.</li>
+</ul></dd>
+<dt>Atom name[[spec:1]</dt><dd>starts from capital letters.
+<ul class="org-ul">
+<li>e.g. <code>p</code>, <code>atom123</code>, <code>bar_fooBar'</code></li>
+<li>we use \(p\) or \(q\) to denote them in the following description.</li>
+</ul></dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-org231887f" class="outline-3">
+<h3 id="org231887f"><span class="section-number-3">3.2</span> Syntax of a process</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+The syntax of a process (program) \(P\) is defined inductive as the following:
+</p>
+
+<dl class="org-dl">
+<dt>Null</dt><dd>\(\emptyset\)
+<ul class="org-ul">
+<li>This is not allowed to write explicitly by users.</li>
+</ul></dd>
+<dt>Atom</dt><dd>\(p(X_1, ..., X_n)\) where \(n \leq 0\)
+<ul class="org-ul">
+<li>The node of a graph</li>
+</ul></dd>
+<dt>Molecule</dt><dd>\((P, P)\)</dd>
+<dt>Link creation</dt><dd>\(\nu X. P\)
+<ul class="org-ul">
+<li>Hides link \(X\) in \(P\)</li>
+<li>\(\nu\) is denoted as <code>\</code> in the concrete syntax.</li>
+</ul></dd>
+<dt>Rule</dt><dd>\((P \vdash Q)\)
+<ul class="org-ul">
+<li>Defines a rule to reduce graph</li>
+</ul></dd>
+</dl>
+
+
+<p>
+[spec:1] <code>-&gt;</code> is also allowed but not intended for a user to write.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0e94107" class="outline-2">
+<h2 id="org0e94107"><span class="section-number-2">4</span> Implementation</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+<a href="./memory_management.html">Note about memory management</a> 
+</p>
+</div>
+
+<div id="outline-container-org454e713" class="outline-3">
+<h3 id="org454e713"><span class="section-number-3">4.1</span> Syntax</h3>
+<div class="outline-text-3" id="text-4-1">
+<div class="org-src-container">
+<pre class="src src-ocaml" id="org8e25564">(* argument of an atom *)
+type arg =
+  | Atom of string * arg list  (* atom. e.g. a(X, Y) *)
+  | Link of string             (* link. e.g. X *)
+
+(* process *)
+type proc = 
+  | Zero
+  | Ind of string option * arg  (* indirection. e.g. X -&gt; a(Y) *)
+  | Mol of proc * proc          (* molecule. e.g. (P, Q) *)  
+  | New of string * proc        (* link creation. e.g. \X.P *)
+  | Rule of proc * proc         (* rule. e.g. P :- Q. *)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org9d106c2" class="outline-3">
+<h3 id="org9d106c2"><span class="section-number-3">4.2</span> VM</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+<pre class="src src-ocaml">(* node *)
+type vm_atom =
+  | VMAtom of string * node_ref list
+  | VMInd of node_ref
+ and node_ref = (int * vm_atom) ref  (* (indeg, atom) *)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Jin SANO</p>
+<p class="date">Created: 2021-06-21 Mon 22:00</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

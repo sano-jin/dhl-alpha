@@ -1,0 +1,97 @@
+#+title: A POC of Directed HyperLMNtal 
+#+author: Jin SANO
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: ^:nil
+
+* About
+  A minimal implementation of a graph rewriting language Directed HyperLMNtal.
+
+* Project overview
+
+** Source programs
+   - util.ml		:: Some utility functions
+
+*** Compiler
+
+**** Lexical/Syntax analysis
+     - syntax.ml	:: The abstract syntax definition
+     - lexer.mll	:: Defines a token for lexing
+     - parser.mly 	:: Defines a grammar for parsing
+
+**** Semantic analysis
+     - alpha.ml		:: Convert local link names to fresh ids and partition atoms and rules
+     - link_check.ml	:: Collect link information and check them
+     - breakdown.ml	:: Check rule conditions and break down atoms
+
+*** VM
+    - vm.ml		:: Type definition of an atom and pretty printer for its multi-set
+    - match.m		:: Perform graph pattern matching
+    - pushout.ml	:: Generate and push atoms
+    - eval.ml		:: The one step reducer
+
+*** Repl
+    - main.ml		:: File loader and the main execution loop
+
+
+* Syntax
+
+** Identifiers
+   - Link name :: starts from capital letters or =_=
+     - e.g. =X=, =Link123=, =_foo'=
+     - we use \(X\) or \(Y\) to denote them in the following description.
+   - Atom name[[spec:1] :: starts from capital letters.
+     - e.g. =p=, =atom123=, =bar_fooBar'=
+     - we use \(p\) or \(q\) to denote them in the following description.
+   
+** Syntax of a process
+
+   The syntax of a process (program) \(P\) is defined inductive as the following:
+
+   - Null :: \(\emptyset\)
+     - This is not allowed to write explicitly by users.
+   - Atom :: \(p(X_1, ..., X_n)\) where \(n \leq 0\)
+     - The node of a graph
+   - Molecule :: \((P, P)\)
+   - Link creation :: \(\nu X. P\)
+     - Hides link \(X\) in \(P\)
+     - \(\nu\) is denoted as =\= in the concrete syntax.
+   - Rule :: \((P \vdash Q)\)
+     - Defines a rule to reduce graph
+
+       
+   [spec:1] =->= is also allowed but not intended for a user to write.
+
+* Implementation
+
+  [[./memory_management.org][Note about memory management]] 
+  
+** Syntax
+   #+NAME: Syntax of Directed HyperLMNtal
+   #+begin_src ocaml
+     (* argument of an atom *)
+     type arg =
+       | Atom of string * arg list  (* atom. e.g. a(X, Y) *)
+       | Link of string             (* link. e.g. X *)
+
+     (* process *)
+     type proc = 
+       | Zero
+       | Ind of string option * arg  (* indirection. e.g. X -> a(Y) *)
+       | Mol of proc * proc          (* molecule. e.g. (P, Q) *)  
+       | New of string * proc        (* link creation. e.g. \X.P *)
+       | Rule of proc * proc         (* rule. e.g. P :- Q. *)
+   #+end_src
+
+** VM
+   #+begin_src ocaml
+     (* node *)
+     type vm_atom =
+       | VMAtom of string * node_ref list
+       | VMInd of node_ref
+      and node_ref = (int * vm_atom) ref  (* (indeg, atom) *)
+   #+end_src
+  
+  
+  
+
+  

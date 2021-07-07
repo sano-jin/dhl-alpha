@@ -1,0 +1,5 @@
+0: append(cons(a, cons(b, nil)), cons(c, nil))
+1: cons(a, append(cons(b, nil), cons(c, nil)))
+2: cons(a, cons(b, append(nil, cons(c, nil))))
+3: cons(a, cons(b, L0)). L0 -> L1. L1 -> cons(c, nil)
+Final state: cons(a, cons(b, cons(c, nil)))

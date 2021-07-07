@@ -1,0 +1,98 @@
+digraph G {
+	rankdir="LR";
+	graph [
+	       ratio=1;
+	       charset = "UTF-8";
+	       labelloc = "t",
+	       labeljust = "c",
+	       bgcolor = "#343434",
+	       fontsize = 18,
+	       style = "filled",
+	       fontname = "Migu 1M",
+	       nodesep=0.7
+	       ];
+
+	edge [
+	      colorscheme = rdylgn11,
+	      color = 7,
+	      fontname = "Migu 1M"
+	      ];
+
+	node [
+	      colorscheme = rdylgn11,
+	      fontname = "Migu 1M",
+	      color = 7,
+	      fontsize = 18,
+	      fontcolor = 6,
+	      margin = -0.1,
+	      ];
+
+	a1, a2, a3, a4, a5, a6, a7, a8, a9, a10 [shape = point, color = 9]
+	i1, i2, i3, i4
+	[
+	 shape = circle,
+	 style = "dotted",
+	 label="→"
+	 ];
+	a [shape = circle];
+	b [shape = circle];
+
+	a1 -> i1;
+	a2 -> i1;
+	a3 -> i1;
+
+	a4 -> i2;
+	a  -> i2[style=dashed];
+
+	a5 -> i3;
+	i1 -> i3;
+	i2 -> i3[style=dashed];
+
+	a6 -> i4;
+	a7 -> i4;
+	i3 -> i4[style=dashed];
+	a8 -> i4;
+	a9 -> i4;
+
+	i4 -> b;
+	a10 -> b;
+
+	i1 [xlabel = 3];
+	i2 [xlabel = 2];
+	i3 [xlabel = 6];
+	i4 [xlabel = 10];
+	b  [xlabel = 11];
+
+	// step 0
+	// a[style = "filled", color = 10];
+
+	// step 1
+	// i2[style = "filled", color = 10, xlabel = "2 - 1"];
+	 
+	// step 2
+	i2[xlabel = 1];
+	// i3[style = "filled", color = 10, xlabel = "6 - 2"];
+
+	// step 3
+	i3[xlabel = 4];
+	i4[style = "filled", color = 10, xlabel = "10 - 6"];
+	 	
+	// // step 4
+	// i4[xlabel = 4];
+	// // b[style = "filled", color = 10];
+	// 
+	// // step 5
+	// // i3[style = "filled", color = 10];
+	// i3 -> b;
+	// 
+	// // step 6
+	// // i2[style = "filled", color = 10];
+	// i2 -> b;
+	// 
+	// // step 7
+	// a[style = "filled", color = 10];
+	// a -> b;
+}
+
+
+

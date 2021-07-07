@@ -1,0 +1,50 @@
+#+title: DHL in OCaml
+#+subtitle: A minimal interpreter of a language based on graph rewriting
+#+author: Jin SANO
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: ^:nil
+
+* ノードの管理
+
+
+  - 黒丸 :: 本物のノード
+  - 白丸 :: 間接参照のためのノード
+
+  とする
+
+  ノードはそれぞれ /（白丸を介して間接的に）いくつの黒丸から指されているか？/
+  という *参照カウント* を持つ
+  - いくつのノードから指されているか？という *普通の参照カウントとは少し異なる*
+
+
+  #+BEGIN_SRC dot :file fig/dot_test1.png
+    digraph G {
+	    rankdir="LR";
+	    graph [labelloc = "t", labeljust = "c", bgcolor = "#343434", fontsize = 18, style = "filled", nodesep = 0.9, fontname = "Migu 1M"];
+	    edge [colorscheme = rdylgn11, color = 7, fontname = "Migu 1M"];
+	    node [colorscheme = rdylgn11, fontname = "Migu 1M", color = 7, fontsize = 18, fontcolor = 10, shape = circle, width = 0.2, label = ""];
+	    a[xlabel = 0, style = filled];
+	    b[xlabel = 1, style = filled];
+	    a -> b;
+    }
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:fig/dot_test1.png]]
+
+    #+BEGIN_SRC dot :file fig/dot_test2.png
+      digraph G {
+	      rankdir="LR";
+	      graph [labelloc = "t", labeljust = "c", bgcolor = "#343434", fontsize = 18, style = "filled", nodesep = 0.9, fontname = "Migu 1M"];
+	      edge [colorscheme = rdylgn11, color = 7, fontname = "Migu 1M"];
+	      node [colorscheme = rdylgn11, fontname = "Migu 1M", color = 7, fontsize = 18, fontcolor = 10, shape = circle, width = 0.2, label = ""];
+	      a -> b;
+	      a -> i -> b;
+	      a[xlabel = 0, style = filled];
+	      b[xlabel = 1, style = filled];
+	      i[xlabel = 1];
+      }
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:fig/dot_test2.png]]

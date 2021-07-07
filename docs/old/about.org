@@ -1,0 +1,42 @@
+#+title: DHL in OCaml
+#+subtitle: A minimal interpreter of a language based on graph rewriting
+#+author: Jin SANO
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: ^:nil
+
+
+* About
+  A minimal implementation of a graph rewriting language Directed HyperLMNtal.
+
+** Getting Started
+*** Prerequisites
+    - [[https://opam.ocaml.org/][opam]]
+
+*** Installation
+    #+NAME: Installation
+    #+BEGIN_SRC sh
+      git clone https://github.com/sano-jin/dhl-in-ocaml
+      cd dhl-in-ocaml
+      opam install .
+      opam exec -- dune build
+    #+END_SRC
+ 
+** Usage
+
+   example/append.dhl  
+   #+include: ../example/append.dhl example
+   
+   #+NAME: Usage
+   #+BEGIN_SRC sh :dir ../ :exports both :results code :cache yes
+     ./dhl example/append.dhl -t
+   #+END_SRC
+
+   #+RESULTS[e0c57b8f070978062c17c899b19171f1a61edb52]: Usage
+   #+begin_src sh
+     0: append(cons(a, cons(b, nil)), cons(c, nil))
+     1: cons(a, append(cons(b, nil), cons(c, nil)))
+     2: cons(a, cons(b, append(nil, cons(c, nil))))
+     3: cons(a, cons(b, L0)). L0 -> L1. L1 -> cons(c, nil)
+     Final state: cons(a, cons(b, cons(c, nil)))
+   #+end_src
+

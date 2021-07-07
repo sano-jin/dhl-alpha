@@ -1,0 +1,396 @@
+#+title: DHL in OCaml
+#+subtitle: A minimal interpreter of a language based on graph rewriting
+#+author: Jin SANO
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: ^:nil
+
+* Docs
+
+** About
+   A minimal implementation of a graph rewriting language Directed HyperLMNtal.
+
+*** Getting Started
+**** Prerequisites
+     - [[https://opam.ocaml.org/][opam]]
+
+**** Installation
+     #+NAME: Installation
+     #+BEGIN_SRC sh
+       git clone https://github.com/sano-jin/dhl-in-ocaml
+       cd dhl-in-ocaml
+       opam install .
+       opam exec -- dune build
+     #+END_SRC
+ 
+*** Usage
+
+    example/append.dhl  
+    #+include: ../example/append.dhl example
+   
+    #+NAME: Usage
+    #+BEGIN_SRC sh :dir ../ :exports both :results code :cache yes
+      ./dhl example/append.dhl -t
+    #+END_SRC
+
+    #+RESULTS[e0c57b8f070978062c17c899b19171f1a61edb52]: Usage
+    #+begin_src sh
+      0: append(cons(a, cons(b, nil)), cons(c, nil))
+      1: cons(a, append(cons(b, nil), cons(c, nil)))
+      2: cons(a, cons(b, append(nil, cons(c, nil))))
+      3: cons(a, cons(b, L0)). L0 -> L1. L1 -> cons(c, nil)
+      Final state: cons(a, cons(b, cons(c, nil)))
+    #+end_src
+
+   
+** 実装の概要
+   500 LOC 程度の非常に小さいプログラムである
+   （ことを目指していた）
+  
+*** LOC
+    #+NAME: directory
+    #+BEGIN_SRC sh :exports results :results code :cache yes :dir ../ 
+      cd src && ../scripts/cloc.sh "*.ml *.mll *.mly" | tail -n 18 
+    #+END_SRC
+
+    #+RESULTS[00c3eb5e985c9fdd33011bb33a2dd33d916156e7]: directory
+    #+begin_src sh
+    -------------------------------------------------------------------------------
+    match.ml                            15             19             76
+    redir.ml                            25             26             72
+    util.ml                             25              7             66
+    breakdown.ml                        24             17             60
+    parser.mly                          20             12             59
+    main.ml                             11              8             50
+    dump.ml                             10             13             48
+    pushout.ml                          16              2             44
+    link_check.ml                       16             11             39
+    vm.ml                               24             46             39
+    alpha.ml                            14             11             34
+    lexer.mll                           10              8             34
+    eval.ml                              5              5             16
+    syntax.ml                            2              3              9
+    -------------------------------------------------------------------------------
+    SUM:                               217            188            646
+    -------------------------------------------------------------------------------
+    #+end_src
+    
+*** Dependencies
+
+    #+name: dependencies
+    #+begin_src sh :exports none :cache yes
+      python3 ../scripts/dep_graph.py ../src | dot -Tsvg > output.svg 
+    #+end_src
+   
+    #+RESULTS[a1e420228ddedc43f8de54de51b208ccb6113a08]: dependencies
+    
+    [[./output.svg]]
+    
+   
+*** プログラムの簡単な解説
+
+   
+   
+**** Utility functions 
+     - util.ml		:: Some utility functions
+
+**** Compiler
+
+***** Lexical/Syntax analysis
+      - syntax.ml	:: The abstract syntax definition
+      - lexer.mll	:: Defines a token for lexing
+      - parser.mly 	:: Defines a grammar for parsing
+
+***** Semantic analysis
+      - alpha.ml	:: Convert local link names to fresh ids and partition atoms and rules
+      - link_check.ml	:: Collect link information and check them
+      - breakdown.ml	:: Check rule conditions and break down atoms
+
+**** VM
+     - vm.ml		:: Type definition of an atom and pretty printer for its multi-set
+     - match.ml		:: Perform graph pattern matching
+     - redir.ml		:: Detect invalid circular redirections and set reference counters
+     - pushout.ml	:: Generate and push atoms
+     - eval.ml		:: The one step reducer
+
+**** Repl
+     - main.ml		:: File loader and the main execution loop
+
+*** 実行オプション一覧
+
+    #+name: options
+    #+BEGIN_SRC sh :exports both :results code :cache yes :dir ../ 
+      ./dhl -help
+    #+end_src
+   
+    #+RESULTS[eecf2970f6e28d51378a4675782fb1cccd0f55de]: options
+    #+begin_src sh
+    append [-t] [-verbose] <file1> [<file2>] ... 
+      -t Trace
+      -v Output debug information
+      -help  Display this list of options
+      --help  Display this list of options
+    #+end_src
+    
+    
+** アトムのメモリ管理に関して
+   性能を出すためには，局所リンクでマッチしたアトムや Indirection アトム
+   （自由リンクでマッチしてシンボルアトムを置き換える）を毎回アトムリストから削除するよりも，
+   Void アトムで更新して，マッチングの際にアトムリストからトラバースする時にアトムリストから取り除き，
+   メモリ領域を解放してやる方が良いかもしれない
+   - アトムリストの位置をアトムに付加しておいて，その情報をもとに削除するのが一番手っ取り早い（気がしてきた）
+   
+   
+   現状の方針
+   - Indirection アトムはアトムリストに登録しない
+   - 局所リンクでマッチしたアトムは毎回アトムリストから除去する
+    
+*** アトムが持つべき情報
+
+**** シンボルアトムの持つべき情報
+     - アトム名
+     - 引数のリンク（ポインタ）を m 本
+     - 他の（Indirection アトムを経由するものも含めた）シンボルアトムからの被参照数
+       - アトムリストからの参照はカウントしない
+       - アトムリストからは常に辿れるはず（べき）なので
+
+**** Indirection アトムの持つべき情報
+     - 引数のリンクを一本（ポインタ）
+     - 他の（Indirection アトムを経由するものも含めた）シンボルアトムからの被参照数
+       - アトムリストからは参照されない前提
+       - 他のアトムが（他のアトムを参照しようとして間接的に）参照している場合は，
+	 この Indirection アトムは消去できない
+     - Indirection アトムは他のシンボルアトムからの被参照数がゼロの場合はそもそも生成しない
+       - アトムリストにも登録しない
+
+	 
+*** トラバースに関して
+
+**** アトムリストの参照から辿り始めた場合
+     - 必ずシンボルアトムを dereference するべき
+     - Indirection アトムはアトムリストに登録しないので
+
+**** アトムの引数のリンク（ポインタ）から辿り始めた場合
+     - 参照先がシンボルアトムなら普通にマッチする
+     - 参照先が Indirection アトムだったらその先を辿る
+       - シンボルアトムから辿った場合は，Indirection アトムの被参照数を1減らす
+	 - アトムの引数からの参照の分
+	 - これで Indirection アトムの被参照数がゼロになったらメモリを解放
+	 - Indirection アトムからたどっているときは，その被参照数分だけ減算する必要がある
+       - Indirection アトムを辿っているうちに普通のアトムに辿り着いたら
+	 - そのアトムへの参照で今まで辿ってきた 0 個以上の Indirection アトムも含めて元のアトムの引数を更新する
+       - Indirection アトムを辿っているうちに自分自身に辿り着くということはあるか？
+	 （Indirection のみでループしうるか？）
+	 - 設計が正しければ，そんなことは起きない
+	 - アトムの引数からは必ずアトムが一つ辿れるはずなので
+
+	  
+
+*** Push に関して
+    - 被参照数がゼロになるような Indirection はそもそも生成しない
+    - Indirection の左辺の自由リンクは局所リンクでマッチしたアトムと同じく，
+      アトムリストから除去する
+      - 従って，Indirection アトムはアトムリストに登録されない
+      - 従って，アトムの参照カウンタはシンボルアトムからの（間接参照も含む）参照数とアトムリストからの参照の分
+	の和よりも大きくなることはない
+	- つまり，参照カウンタの値がゼロになったら破棄して良い（それ以外に参照しているものはいないことが保証される）
+
+
+    - リダイレクションを行っている際は，リダイレクションの左辺の自由リンクがマッチしたアトムの被参照数を
+      右辺がマッチした自由リンクのアトムの被参照数に加算する
+      - Indirection はトラバースするので，マッチングを行う前の時点では必ずこれはシンボルアトムである
+      - リダイレクションによって，これは Indirection アトムになりうる．その場合問題ではないのか？
+	- 循環するリダイレクションならば，被参照数はゼロであることが保証されている
+	  - 被参照数がゼロのときは，消去を行うので問題ではない？
+	  - （そもそも本当に書き換え後も被参照数がゼロであることを保証できているのか？という問題もある）
+	  - リダイレクションがひとつの場合ならこれで良いが，二つ以上になるとうまくいかない（かも）
+	    - 同値類で分類してチェックする？
+
+	      
+*** リダイレクトにおける参照カウンタの再設定と不正な間接循環参照の検出と解放できる間接参照の特定アルゴリズム
+
+    https://gitlab.ueda.info.waseda.ac.jp/sano/reference-counter-problem を参照
+
+    アルゴリズム概要
+    1. 間接参照で置き換えるノードからの参照の分だけ，参照カウンタを減算しておく
+    2. 間接参照で置き換えるノードを任意に選択する
+    3. 間接参照を順方向にトラバースする（辿ったノードには印をつけておく）
+       1. 循環を検出した場合
+	  1. そのノードから間接参照の逆辺を全て辿って，全ての参照カウンタの値がゼロになっていることを確認する（辿ったノードには印をつけておく）
+	     - 定理：連結した間接参照のサブグラフにおいて循環が存在する場合，その任意のノードから順方向にトラバースして必ず循環が検知できる
+	     - 間接ノードはポインタを一つしか持たないため
+       2. 循環を検出しないまま，シンボルアトムを参照する間接ノードに到達した場合
+	  1. そのノードから逆辺を深さ優先探索して，帰りがけに被参照数の和でノードの被参照数を更新していく（辿ったノードには印をつけておく）
+	  2. ただ，path-compression もしたい
+    4. 辿っていないノードがある限り 2 から繰り返し
+
+    
+
+** デバッグ用の Dumper
+
+   =-v= オプションをつけると，アトムリストをダンプする
+
+   - アトムリスト上に存在するアトムは 0 から連続する整数のアドレスをふって表示する
+     - 全てシンボルアトムであるべき
+       （Indirection アトムはアトムリストに登録しない）
+   - アトムリストにないアトムは負数のアドレスを振って表示する
+     - 全て Indirection アトムであるべき
+       （シンボルアトムは必ずアトムリストに登録されているべきなので）
+    
+  
+   #+NAME: Execution with verbose option  
+   #+BEGIN_SRC sh :dir ../ :exports both :results code :cache yes
+     ./dhl example/append.dhl -t -v
+   #+END_SRC
+
+
+  
+** Dump.dump に関して
+
+   トポロジカルソートを行う過程で，全ての到達可能なアトムのリストを返すため，
+   Indirection アトムも明示的に dump するようになっている
+
+   今はデバッグに便利そうだから放っておいているが，
+   あとで Indirection アトムは隠蔽するように変更しても良いかもしれない
+
+  
+** マッチングの戦略
+  
+   #+NAME: Matching environment
+   #+BEGIN_SRC ocaml
+     type env = {
+       matched_atoms: node_ref list;
+       (** all the addresses of the matched atoms on lhs *)
+
+       local2addr: (int * node_ref) list;
+       free2addr: (string * node_ref) list;
+     }
+   #+END_SRC
+
+   全体としては，3本のリスト（スタック）を持つことになる（と思われる）
+
+*** マッチングを行ったアトムのアドレスの集合
+    マッチングを行ったアトムのアドレスは =matched_atoms= に追加する
+    - これはアトムへの非単射的なマッチングを防ぐため
+    - ファンクタごとに分類した方が効率的である
+
+*** リンクからアドレスへの写像
+    マッチングに成功したリンクは対応するノードのアドレスとともに持っておき，
+    次回からはアトムリストから探索するのではなく dereference を行う
+    - この，Dereference を行うかの判断は静的に行うことができる
+      （コンパイラのタスクである）
+
+    それぞれ，
+    - マッチングに成功した局所リンクは対応するノードのアドレスとともに =local2addr= に登録する
+    - マッチングに成功した自由リンクは対応するノードのアドレスとともに =free2addr= に登録する
+
+*** 自由リンクから入次数への写像
+
+    これが計算されるのはマッチング終了間際（マッチング自体には成功して，自由リンクの入次数のチェックを行う前）である．
+
+    ただし，失敗したらバックトラックを行う必要があるために，あくまでマッチングの最後として行う必要がある
+    - マッチングと分離して，マッチング後に行うようにすることはできない
+   
+    - 自由リンクの入次数チェックを行う前に破壊的代入を行なってしまい，
+      チェックを行った結果，ダメだったら再度正負を反転した入次数の差分を代入して戻す
+
+
+** メモ
+  
+   （参照カウンタ方式でない）Garbage collector を必要としないハイパーグラフ書き換え言語
+
+   サブグラフの共有，循環参照を扱うことももちろんできる
+   - 参照カウンタで GC を行う言語では循環参照は扱えない
+
+   参照カウンタは持っているものの，普通のアトムは GC をするわけではない
+   - 実は通常のアトムにおける「入次数」の値は普通の参照カウンタの値と少し異なる
+     - Indirection アトムでないアトムからの参照数を数える
+     - Indirection アトムを経由するものも，それぞれ独立した参照として数える
+   - Indirection アトムは除去する必要があるが，これも（意味論上は）循環する可能性がある
+   - 参照カウンタのみで循環する（可能性がある）Indirection を検知してこれをメモリリークさせずに扱うのはちょっとした課題
+
+   局所リンクのパターンマッチはもしかしたら他の（グラフ書き換え）言語にはあまりない話かもしれない
+   - 全称量化マッチングに繋がる話
+
+   参照カウンタに関しても，線形性解析などによりかなりの部分を除去可能だと思われる
+   - 最適化の余地はたくさんある
+
+   どのみち参照カウンタは持っているわけだし，（参照カウンタ方式での）Garbage collection を組み込むのもそんなに不自然な話ではないと思う
+   - ただし，言語そのものに組み込む必要はない（しても良いけど）
+     - 例えば「GC 膜」とかいうのを用意してやって，その膜の中のアトムは外からの参照からたどれないなら消去する……とか
+
+
+** あらすじ
+
+   プログラミング言語はメモリの扱いに関してだけでも色々ある．
+
+   いわゆる「普通の言語」をざっと見ていくと，
+  
+   - C (C++) 言語は *そもそもメモリ安全でない*
+   - Rust は「所有権」により，基本的には *1 to 1 の参照に制限する*
+     - そうはいかない場合は参照カウンタに任せる事になる（か，あるいは =unsafe= ）
+   - 参照カウンタ方式の場合は， *n to 1 の参照が可能* であるが， *循環参照できない*
+     - （できないというのは言い過ぎかもしれないが）
+     - メモリリークする可能性がある
+     - 正格な関数型言語は参照カウンタだけでも実装可能だったりはする
+     - C++, Rust では基本的にはここまで
+     - （C++er とかからすると無視できないコストのようだが）より強力な GC よりもずっと低コスト
+       - Stop the world する必要はない
+   - 多くの関数型言語，Java などでは 参照カウンタよりも強力な Garbage collector を用いる
+     - 関数型言語の場合は，Garbage collector がないと実装できない（funarg problem）
+     - *n to 1 の参照・循環参照が可能* である
+     - ただし，コストは存在する
+       - （基本的には）プログラム全体を停止させてゴミ集めする
+      
+   結論として，
+  
+   - （参照カウンタ方式よりも強力な）Garbage collector を用いずに
+   - 循環参照を許し
+   - メモリリークせず
+   - メモリ安全
+
+   という言語は（当たり前？だが）存在しない．
+
+   かたやグラフ書き換え言語というものがある．
+
+   グラフ書き換え言語にも色々種類がある
+
+   - Groove, agg, progres, GReAT, GrGen.Net :: 多分ほとんどビジュアル（プログラミング）寄りでプログラマブルという感じはあんまりしないもの多数
+   - Dactl  :: 根付き有向グラフ書き換え言語
+     - それぞれのノードは順序付きのポインタを持つ
+     - 論理型・関数型などの言語がトランスパイルされる先のコンパイラにとってのバックエンド言語として設計された
+       - 卒論では「グラフ書き換え言語で言語処理系が実装されたことはない」といったが，アレは真っ赤なウソだった
+       - わざわざ Dactl にトランスパイルしてから Dactl をコンパイルするよりも，それぞれの言語に合わせた最適化を施しながら（c言語のサブセットなどに）コンパイルする方が有利なので廃れた
+     - 根付き有向グラフを扱う
+       - 非連結なグラフは扱えない
+       - 根から辿れないノードは勝手に削除される（Garbage collection）
+       - ただしこのあたりの仕組みは詳しく書いていない（どういう方式の GC を使うのかなど）
+     - 局所リンクのパターンマッチとかは出来ない（と思われる）
+     - 生成するグラフでは循環グラフ・同一ノードを共有などできるが，パターンマッチでそれらのグラフが扱えるのかは不明
+       - たぶん無理（できるのなら宣伝しそうな気がする）
+     - 全体として，基本的には Persistent である
+       - リダイレクトが出来るので，破壊的代入に近いこともできるが
+     - 「マッチしようとしているノードを参照しているものが他にもある」場合も構わずマッチする
+       - この場合，単にマッチしたノードは削除されずに残る（GC されない）
+       - このために dangling pointer がおきない
+     - まさに項書き換えのための言語という感じ
+       - LMNtalに最初触れたときに抱いたイメージそのものだったりする
+     - コントロールトークンがそこそこある
+       - 「計算モデル」という感じでは全然ない
+   - Regrel :: Dactl のグラフ書き換え規則を高階関数のように第一級に扱うようにしたもの
+   - GP2    :: 有向グラフ書き換え言語
+     - よりグラフ理論のグラフ寄りのグラフを扱う
+       - リンクに順序はない
+       - 参照先のノードが削除されたエッジは単に削除される
+	 - このために dangling pointer が起きない
+     - 制御機構が多い（あまりキレイではない）
+       - コントロールトークンがたくさん
+
+
+   まとめると，
+   - 根付き連結グラフよりも強力なグラフを扱えて
+   - リンクに順序がついている
+     - 単にエッジを除去するだけではダメ
+   という有向グラフを扱う言語は意外なことにない（と思われる）
+
+
+	 

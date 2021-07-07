@@ -1,0 +1,12 @@
+% A list appending example. 
+
+% The initial graph.
+append(cons(a, cons(b, nil)), cons(c, nil)).
+
+% append_cons @@
+R -> append(cons(H, T), L)
+:- R -> cons(H, append(T, L)).
+
+% append_nil @@
+R -> append(nil, L)
+:- R -> L.

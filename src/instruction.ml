@@ -15,7 +15,7 @@ type lhs_inst =
   | PeakAtom reg_i functor_
   (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
       - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
-      - not failable and possibly rewind
+      - failable and possibly rewind
    *)
 
   | CheckFunctor reg_i functor_ 

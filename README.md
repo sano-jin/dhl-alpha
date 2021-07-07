@@ -1,4 +1,4 @@
-# dhl-in-ocaml
+# dhlc-alpha
 
 A minimal compiler and runtime for a language based on graph rewriting.
 
@@ -8,8 +8,8 @@ A minimal compiler and runtime for a language based on graph rewriting.
 
 ### Installation
 ```bash
-git clone https://github.com/sano-jin/dhl-in-ocaml
-cd dhl-in-ocaml
+git clone https://github.com/sano-jin/dhlc-alpha
+cd dhlc-alpha
 opam install .
 dune build
 ```

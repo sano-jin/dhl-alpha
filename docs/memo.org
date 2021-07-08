@@ -6,8 +6,6 @@
 
 * logo
 
-  [[./Dhl-logo.svg]]
-
   [[./DHL-logo-alpha.svg]]
   
 

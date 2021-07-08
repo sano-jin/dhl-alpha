@@ -2,6 +2,8 @@
 
 ![logo](./docs/DHL-logo.svg)
 
+![logo](./docs/DHL-logo-alpha.svg)
+
 A minimal compiler and runtime for a language based on graph rewriting.
 
 

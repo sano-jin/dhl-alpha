@@ -4,6 +4,12 @@ open Breakdown
 open Util
 open Vm
 
+(** レジスタ番号 *)       
+type reg_i = int;
+
+(** ファンクタ:= (アトム名, リンクの数) *)
+type functor_ = string * int
+
 (** ルール左辺におけるマッチングのための中間命令 *)
 type lhs_inst =
   | PeakAtom reg_i functor_

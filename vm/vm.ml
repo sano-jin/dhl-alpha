@@ -7,35 +7,21 @@ type vm_atom =
   | VMInd of node_ref ref
  and node_ref = (int * vm_atom) ref  (** (indeg, atom) *)
 
-(** レジスタ番号 *)       
-type reg_i = int;
 
-(** ファンクタ:= (アトム名, リンクの数) *)
-type functor_ = string * int
-
-
+				
 (** An environment for the matching and pushout *)
 type env = {
-  matched_atoms: (functor_ * reg_i) list;
-  (** all the indices of registers which store the address of the matched atoms on lhs *)
+  matched_atoms: node_ref list;
+  (** all the addresses of the matched atoms on lhs *)
   
-  local2reg_i: (int * reg_i) list;
-  (** 局所リンクがマッチしたアドレスを格納しているレジスタ番号の連想リスト *)
-  
-  free2reg_i: (string * reg_i) list;
-  (** 自由リンクがマッチしたアドレスを格納しているレジスタ番号の連想リスト *)
-
-  free_reg_i: int;
-  (** まだ使っていないレジスタ番号の最小値（= レジスタの数） *)
+  local2addr: (int * node_ref) list;
+  free2addr: (string * node_ref) list;
 }
 
 let empty_env =
   {matched_atoms = []; local2addr = []; free2addr = []}	     
 
-let get_free_reg_i env =
-  env.free_reg_i, env = {env with free_reg_i = succ free_reg_i}
-    
-    
+
     
 (** Free memory fragment of the given address.
     Possibly implemented with `option` type and assign `None`.

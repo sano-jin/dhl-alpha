@@ -8,7 +8,7 @@ type vm_atom =
  and node_ref = (int * vm_atom) ref  (** (indeg, atom) *)
 
 (** レジスタ番号 *)       
-type reg_i = int;
+type reg_i = int
 
 (** ファンクタ:= (アトム名, リンクの数) *)
 type functor_ = string * int
@@ -30,10 +30,10 @@ type env = {
 }
 
 let empty_env =
-  {matched_atoms = []; local2addr = []; free2addr = []}	     
+  {matched_atoms = []; local2reg_i = []; free2reg_i = []; free_reg_i = 0}	     
 
 let get_free_reg_i env =
-  env.free_reg_i, env = {env with free_reg_i = succ free_reg_i}
+  env.free_reg_i, {env with free_reg_i = succ env.free_reg_i}
     
     
     

@@ -1,7 +1,5 @@
 (** instruction.ml *)
 
-open Breakdown
-open Util
 open Vm
 
 (** ルール左辺におけるマッチングのための中間命令 *)

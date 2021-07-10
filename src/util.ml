@@ -2,6 +2,7 @@
 
 let (<.) f g = fun x -> f (g x)
 let (<..) f g = fun x y -> f (g x y)
+let (<...) f g = fun x y z -> f (g x y z)
 
 let (>>=) = Option.bind
 let ( let* ) = Option.bind
@@ -32,12 +33,12 @@ let partitionEithers l = List.partition_map id l
 
 let curry f x y = f (x, y)
 let uncurry f (x, y) = f x y
-let rec uncurried_safe_zip = function
+let rec uncurried_safe_unzip = function
   | ([], []) -> Some []
-  | (xh::xt, yh::yt) -> (xh, yh) <::> uncurried_safe_zip (xt, yt)
+  | (xh::xt, yh::yt) -> (xh, yh) <::> uncurried_safe_unzip (xt, yt)
   | _ -> None
 
-let safe_zip t = curry uncurried_safe_zip t
+let safe_unzip t = curry uncurried_safe_unzip t
 let zip_const c = List.map @@ flip pair c
 
 let sym_diff l r =
@@ -95,7 +96,5 @@ let maybe default = function
 let rec fold_opt f unit = function
   | [] -> Some unit
   | h::t -> f unit h >>= flip (fold_opt f) t
-							   
-(* キーがリストの末尾から何番目に存在するかを末尾から辿る *)
-let rec assoc_ri x = assoc_i x <. List.rev
+
     

@@ -6,10 +6,10 @@ open Vm
        
 (** Try to reduce one step with the given atoms and a rule *)				      
 let reduce atom_list
-	   (BRule ((lhs_local_indegs, lhs_atoms)
+	   (BRule ((lhs_local_indegs, lhs_atoms, lhs_free_non_incidences)
 		  , free_indeg_diffs
 		  , (rhs_local_indegs, ((_, _, redirs) as rhs)))) =
-  let+ env = Match.match_ (redirs, free_indeg_diffs) lhs_local_indegs atom_list lhs_atoms in
+  let+ env = Match.match_ lhs_free_non_incidences (redirs, free_indeg_diffs) lhs_local_indegs atom_list lhs_atoms in
   (*  print_endline "matched"; *)
   let local_addrs = List.map snd env.local2addr in
   let redirected_addrs = List.map (flip List.assoc env.free2addr) @@ List.map fst redirs in

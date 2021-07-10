@@ -107,6 +107,23 @@ let rec find_atom local_indegs env =
   | [] -> Redir.check_redirs free_link_info env
 *)
 
-let find_atoms = List.fold_map_left <. find_atom 		       
+(* 引数に local_indegs env inds をとる *)
+let find_atoms = List.fold_map_left <. find_atom
 		       
-let match_ = find_atoms empty_env 
+let match_ lhs_free_non_incidences (redirs, free_indeg_diffs) lhs_local_indegs lhs_atoms =
+  let env, insts = find_atoms lhs_local_indegs empty_env lhs_atoms in
+  let reg_i_of x = List.assoc x env.free2reg_i in
+  let check_redirs = (* 不正なリダイレクションを行っていないのかのチェックを行う *)
+    let redirs = List.map (first reg_i_of @@ second reg_i_of) redirs in
+    let free_indeg_diffs = List.map (first reg_i_of) free_indeg_diffs in
+    CheckRedirs (redirs, free_indeg_diffs)
+  in
+  let check_non_injects = (* ルール左辺でアトムを参照していない自由リンクが局所リンクと非単射的マッチングをしていないかチェックする *)
+    let check_ref_neq_of reg_i reg_j = CheckRefNeq (reg_i, reg_j) in
+    let check_non_inject_of reg_i = List.map (check_ref_neq_of reg_i <. snd) env.local2reg_i in
+    List.map (check_non_inject_of <. reg_i_of) lhs_free_non_incidences
+  in
+  env, insts @ check_non_injects @ [check_redirs]
+
+  
+  

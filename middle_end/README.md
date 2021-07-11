@@ -1,41 +1,18 @@
-# Source programs
+# Middle end
 
-## Overview
+- [instruction.ml](instruction.ml)
+  - Definitions for intermediate instructions
 
-- util.ml
-  - Some utility functions
+- [register_table.ml](table.ml)
+  - Associate each links to the assigned registers
 
-### Compiler
+- [match.ml](match.ml)
+  - Generate instructions for the graph pattern matching
 
-**Syntax analysis**
+- [pushatom.ml](pushatom.ml)
+  - Generate instructions for the pushout of the graph
 
-- syntax.ml
-  - The abstract syntax definition
-- lexer.mll
-  - Defines a token for lexing
-- parser.mly
-  - Defines a grammar for parsing
+- [gen_ic.ml](gen_ic.ml)
+  - The toplevel of the intermediate code generator
 
-**Semantic analysis**
-
-- alpha.ml
-  - Convert local link names to fresh ids and partition atoms and rules
-- link_check.ml
-  - Collect link information and check them
-- breakdown.ml
-  - Check rule conditions and break down atoms
-
-### VM
-- vm.ml
-  - Type definition of an atom and pretty printer for its multi-set
-- match.ml
-  - Perform graph pattern matching
-- pushatom.ml
-  - Generate and push atoms
-- eval.ml
-  - The one step reducer
-
-### Repl
-- main.ml
-  - File loader and the main execution loop
 

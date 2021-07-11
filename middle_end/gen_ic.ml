@@ -2,10 +2,11 @@
 
 open Front_end
 open Util
-open Vm
-open Instruction
+open Register_table
+include Instruction
 
-       
+
+
 (** ルールから中間命令列を生成する
     - 戻り値は，生成した中間命令列と必要になるレジスタの数
  *)
@@ -26,8 +27,10 @@ let gen_ic_of_rule
   reg_length, (lhs_insts, rhs_insts)
 						  
 
+
 (** ルールセットから中間命令列とレジスタの数のタプルのリストを生成する *)
 let gen_ic_of_rules = List.map gen_ic_of_rule
+
 
 
 (** 初期状態を生成するための中間命令と必要なレジスタの数を返す *)

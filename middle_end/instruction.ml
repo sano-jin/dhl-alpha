@@ -1,7 +1,12 @@
 (** instruction.ml *)
 
-open Vm
 open Util
+
+(** レジスタ番号 *)       
+type reg_i = int
+
+(** ファンクタ:= (アトム名, リンクの数) *)
+type functor_ = string * int
 
 
 (** ルール左辺におけるマッチングのための中間命令

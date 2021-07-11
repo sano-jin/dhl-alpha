@@ -22,8 +22,8 @@
 %token EOF 
 
 (*  Operator associativity *)
-(* %left DOT *)
 
+(* %left DOT *)
 %nonassoc COLMIN
 %left COMMA
 %nonassoc DOT

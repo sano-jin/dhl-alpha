@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-07-09 Fri 00:39 -->
+<!-- 2021-07-11 Sun 22:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DHL in OCaml</title>
+<title>dhlc-alpha</title>
 <meta name="generator" content="Org mode" />
 <meta name="author" content="Jin SANO" />
 <style type="text/css">
@@ -224,7 +224,7 @@
 </head>
 <body>
 <div id="content">
-<h1 class="title">DHL in OCaml
+<h1 class="title">dhlc-alpha
 <br />
 <span class="subtitle">A minimal interpreter of a language based on graph rewriting</span>
 </h1>
@@ -232,83 +232,158 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orga33cc68">1. logo</a></li>
-<li><a href="#orgbc3a683">2. マッチングのための中間命令</a></li>
+<li><a href="#org4e8fa6b">1. プログラム概要</a>
+<ul>
+<li><a href="#orgb6fc6d8">1.1. Front end</a>
+<ul>
+<li><a href="#org1bd1193">1.1.1. LOC</a></li>
+</ul>
+</li>
+<li><a href="#org10bf045">1.2. Middle end</a>
+<ul>
+<li><a href="#org4273ebb">1.2.1. LOC</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org2462c54">2. 非単射的マッチングのための手法</a>
+<ul>
+<li><a href="#org4aa6b85">2.1. 方針 1</a></li>
+<li><a href="#orgdd44cc6">2.2. 方針 2</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orga33cc68" class="outline-2">
-<h2 id="orga33cc68"><span class="section-number-2">1</span> logo</h2>
-<div class="outline-text-2" id="text-1">
-
-<div id="org2689739" class="figure">
+<div id="orgbdae1a2" class="figure">
 <p><object type="image/svg+xml" data="./DHL-logo-alpha.svg" class="org-svg">
 Sorry, your browser does not support SVG.</object>
 </p>
 </div>
-</div>
-</div>
 
 
-<div id="outline-container-orgbc3a683" class="outline-2">
-<h2 id="orgbc3a683"><span class="section-number-2">2</span> マッチングのための中間命令</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org4e8fa6b" class="outline-2">
+<h2 id="org4e8fa6b"><span class="section-number-2">1</span> プログラム概要</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+コンパイラは 500 LOC 程度（を目指している）
+</p>
+</div>
+
+<div id="outline-container-orgb6fc6d8" class="outline-3">
+<h3 id="orgb6fc6d8"><span class="section-number-3">1.1</span> Front end</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+字句解析・構文解析・意味解析を行う
+</p>
+</div>
+
+<div id="outline-container-org1bd1193" class="outline-4">
+<h4 id="org1bd1193"><span class="section-number-4">1.1.1</span> LOC</h4>
+<div class="outline-text-4" id="text-1-1-1">
 <div class="org-src-container">
-<pre class="src src-ocaml">(** レジスタ番号 *)       
-type reg_i = int;
-
-(** ファンクタ:= (アトム名, リンクの数) *)
-type functor_ = string * int
-
-(** ルール左辺におけるマッチングのための中間命令 *)
-type lhs_inst =
-  | PeakAtom reg_i functor_
-  (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
-      - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
-      - not failable and possibly rewind
-   *)
-
-  | CheckFunctor reg_i functor_ 
-  (** reg_i に格納したアトムのファンクタが functor_ であることを確認する
-      - failable and does not rewind
-   *)
-
-  | CheckIndeg reg_i int
-  (** reg_i に格納したアトムの参照カウンタの値が int であることを確認する
-      - 局所リンクに必要なチェック
-      - failable and does not rewind
-   *)
-
-  | Deref reg_i reg_i int
-  (** [Deref dst_reg_i src_reg_i port_i] は レジスタ [src_reg_i] が参照するアトムの 
-      [port_i] 番目の引数をトラバースしてその先に接続されているシンボルアトムへの参照を
-      レジスタ [dst_reg_i] に格納する
-      - not failable and does not rewind
-   *)
-
-  | CheckRefEq reg_i reg_i
-  (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-      レジスタ [reg_j] に格納されているアドレスが等しいことを確認する
-      - failable and does not rewind
-   *)
-
-  | CheckRefNeq reg_i reg_i
-(** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-      レジスタ [reg_j] に格納されているアドレスが異なることを確認する
-      - failable and does not rewind
- *)
-
-type lhs_insts = lhs_inst list
-
+<pre class="src src-sh">-------------------------------------------------------------------------------
+File                             blank        comment           code
+-------------------------------------------------------------------------------
+breakdown.ml                        24             17             61
+parser.mly                          20             12             59
+link_check.ml                       16             11             39
+alpha.ml                            14             11             34
+lexer.mll                           10              8             34
+syntax.ml                            2              3              9
+front_end.ml                         8              9              8
+-------------------------------------------------------------------------------
+SUM:                                94             71            244
+-------------------------------------------------------------------------------
 </pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org10bf045" class="outline-3">
+<h3 id="org10bf045"><span class="section-number-3">1.2</span> Middle end</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+中間命令列を生成する
+</p>
+</div>
+
+<div id="outline-container-org4273ebb" class="outline-4">
+<h4 id="org4273ebb"><span class="section-number-4">1.2.1</span> LOC</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<div class="org-src-container">
+<pre class="src src-sh">-------------------------------------------------------------------------------
+File                             blank        comment           code
+-------------------------------------------------------------------------------
+match.ml                            25             17             71
+instruction.ml                      42             80             48
+pushout.ml                          38             24             39
+gen_ic.ml                           15              6             18
+register_table.ml                    8              6             11
+-------------------------------------------------------------------------------
+SUM:                               128            133            187
+-------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-org2462c54" class="outline-2">
+<h2 id="org2462c54"><span class="section-number-2">2</span> 非単射的マッチングのための手法</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+とりあえず方針1 を採用する予定
+</p>
+</div>
+
+<div id="outline-container-org4aa6b85" class="outline-3">
+<h3 id="org4aa6b85"><span class="section-number-3">2.1</span> 方針 1</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+アトムのファンクタをマッチするときに非単射的かどうかをチェックする
+</p>
+
+<ul class="org-ul">
+<li>局所リンクはルール左辺において必ずアトムを参照しているはずなので，局所リンクの非単射的マッチングは問題ない</li>
+<li>自由リンクに関しては少し問題
+<ul class="org-ul">
+<li>ルール左辺において，アトムを参照している（incidence が出現する）自由リンクは問題ない</li>
+<li>ルール左辺において，アトムを参照していない（incidence が出現しない）場合は追加のチェックが必要になる
+<ul class="org-ul">
+<li>incidence を持たない自由リンクのみを集めておいて最後にテストしてやれば良い</li>
+<li>これは局所リンクと非単射的にマッチしていないか確かめるだけで良いはず</li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-orgdd44cc6" class="outline-3">
+<h3 id="orgdd44cc6"><span class="section-number-3">2.2</span> 方針 2</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+まだマッチしていない局所・自由リンクが出現したときに非単射的かどうかをチェックする
+</p>
+
+<ul class="org-ul">
+<li>アトムのファンクタをチェックするときにはチェックしなくて良くなる</li>
+<li>ファンクタが異なるアトムに非単射的にマッチする可能性がないことを考慮すると，これは冗長な命令を生む</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Jin SANO</p>
-<p class="date">Created: 2021-07-09 Fri 00:39</p>
+<p class="date">Created: 2021-07-11 Sun 22:24</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

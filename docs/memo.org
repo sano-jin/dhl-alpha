@@ -4,68 +4,68 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: ^:nil
 
-* logo
+[[./DHL-logo-alpha.svg]]
 
-  [[./DHL-logo-alpha.svg]]
+
+* プログラム概要
+
+  コンパイラは 500 LOC 程度（を目指している）
+  
+** Front end
+
+   字句解析・構文解析・意味解析を行う
+   
+*** LOC
+    #+NAME: Front end
+    #+BEGIN_SRC sh :exports results :results code :cache yes :dir ../front_end 
+      ../scripts/cloc.sh "*.ml *.mll *.mly"
+    #+END_SRC
+
+    #+RESULTS[0dfc7df3e42be37e553fa2302c3c3a73040659ec]: directory
+    #+begin_src sh
+    -------------------------------------------------------------------------------
+    File                             blank        comment           code
+    -------------------------------------------------------------------------------
+    breakdown.ml                        24             17             61
+    parser.mly                          20             12             59
+    link_check.ml                       16             11             39
+    alpha.ml                            14             11             34
+    lexer.mll                           10              8             34
+    syntax.ml                            2              3              9
+    front_end.ml                         8              9              8
+    -------------------------------------------------------------------------------
+    SUM:                                94             71            244
+    -------------------------------------------------------------------------------
+    #+end_src
+
+
+** Middle end
+
+   中間命令列を生成する
+   
+*** LOC
+    #+NAME: Front end
+    #+BEGIN_SRC sh :exports results :results code :cache yes :dir ../middle_end
+      ../scripts/cloc.sh "*.ml *.mll *.mly"
+    #+END_SRC
+
+    #+RESULTS[9c84a40f9674f8481e94ff584f59ba6e3f994022]: Front end
+    #+begin_src sh
+    -------------------------------------------------------------------------------
+    File                             blank        comment           code
+    -------------------------------------------------------------------------------
+    match.ml                            25             17             71
+    instruction.ml                      42             80             48
+    pushout.ml                          38             24             39
+    gen_ic.ml                           15              6             18
+    register_table.ml                    8              6             11
+    -------------------------------------------------------------------------------
+    SUM:                               128            133            187
+    -------------------------------------------------------------------------------
+    #+end_src
+
   
 
-* マッチングのための中間命令
-
-  #+BEGIN_SRC ocaml
-    (** レジスタ番号 *)       
-    type reg_i = int;
-
-    (** ファンクタ:= (アトム名, リンクの数) *)
-    type functor_ = string * int
-
-    (** ルール左辺におけるマッチングのための中間命令 *)
-    type lhs_inst =
-      | PeakAtom reg_i functor_
-      (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
-	  - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
-	  - failable and possibly rewind
-       *)
-
-      | CheckFunctor reg_i functor_ 
-      (** reg_i に格納したアトムのファンクタが functor_ であることを確認する
-	  - failable and does not rewind
-       *)
-
-      | CheckIndeg reg_i int
-      (** reg_i に格納したアトムの参照カウンタの値が int であることを確認する
-	  - 局所リンクに必要なチェック
-	  - failable and does not rewind
-       *)
-
-      | Deref reg_i reg_i int
-      (** [Deref dst_reg_i src_reg_i port_i] は レジスタ [src_reg_i] が参照するアトムの 
-	  [port_i] 番目の引数をトラバースしてその先に接続されているシンボルアトムへの参照を
-	  レジスタ [dst_reg_i] に格納する
-	  - not failable and does not rewind
-       *)
-
-      | CheckRefEq reg_i reg_i
-      (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-	  レジスタ [reg_j] に格納されているアドレスが等しいことを確認する
-	  - failable and does not rewind
-       *)
-
-      | CheckRefNeq reg_i reg_i
-    (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-	  レジスタ [reg_j] に格納されているアドレスが異なることを確認する
-	  - failable and does not rewind
-     *)
-
-    type lhs_insts = lhs_inst list
-
-  #+END_SRC
-  
-
-
-
-	 
-
-  
 * 非単射的マッチングのための手法
 
   とりあえず方針1 を採用する予定
@@ -89,3 +89,6 @@
    - アトムのファンクタをチェックするときにはチェックしなくて良くなる
    - ファンクタが異なるアトムに非単射的にマッチする可能性がないことを考慮すると，これは冗長な命令を生む
 
+
+
+   

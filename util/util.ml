@@ -2,6 +2,7 @@
 
 (** 基本的なコンビネータなど *)
 
+
 (** some very basic combinators *)
 let flip f x y = f y x  
 
@@ -11,11 +12,13 @@ let const x _ = x
 let curry f x y = f (x, y)
 let uncurry f (x, y) = f x y
 
+
 			 
 (** tuple の操作のためのコンビネータ *)
 let second f (a, b) = (a, f b)
 let first f (a, b) = (f a, b)
 let pair x y = (x, y)
+
 
 
 (** compositional functions *)
@@ -24,32 +27,41 @@ let (<..) f g = fun x y -> f (g x y)
 let (<...) f g = fun x y z -> f (g x y z)
 
 
+
 (** monadic combinators for the Option type *)
 let (>>=) = Option.bind
 let ( let* ) = Option.bind
+
 
 let (<$>) = Option.map
 let (<&>) x f = Option.map f x
 let ( let+ ) x f = Option.map f x
 
+
 let (<|>) l r = 
   if Option.is_some l then l
   else r ()
 
+
 let rec one_of f = function
   | [] -> None
   | h::t -> f h <|> fun _ -> one_of f t
+
 
 let maybe default = function
   | None -> default
   | Some s -> s 
 
 
+
 (** monadic combinators for the traversible type *)
 let (<::>) h t = List.cons h <$> t
+
+(** monadic fold_left *)
 let rec foldM f acc = function
   | [] -> Some acc
   | h::t -> f acc h >>= flip (foldM f) t			     
+
 
 
 (** 集合演算（Set を用いるようにリファクタリングしても良いかも） *)
@@ -58,8 +70,10 @@ let set_minus_q l r = List.filter (not <. flip List.memq r) l
 let sym_diff l r = set_minus l r @ set_minus r l
 
 
+
 (** Either 型の要素のリストを左右に振り分ける *)
 let partitionEithers l = List.partition_map id l
+
 
 (** zip/unzip *)
 
@@ -68,6 +82,7 @@ let rec uncurried_safe_unzip = function
   | ([], []) -> Some []
   | (xh::xt, yh::yt) -> (xh, yh) <::> uncurried_safe_unzip (xt, yt)
   | _ -> None
+
 
 let safe_unzip t = curry uncurried_safe_unzip t
 let zip_const c = List.map @@ flip pair c
@@ -86,12 +101,14 @@ let rec insert x v = function
      else h :: insert x v t
 
 
+
 (** A helper function for `collect_indeg_arg` and `collect_indeg` *)					
 let rec update fallback f x = function
   | [] -> [x, fallback ()]
   | (y, v) as h::t ->
      if x = y then (y, f v) :: t
      else h::update fallback f x t
+
 
 let rec updateq fallback f x = function
   | [] -> [x, fallback ()]
@@ -100,24 +117,19 @@ let rec updateq fallback f x = function
      else h::updateq fallback f x t
 		    
 		    
+
 let rec update_assc_opt pred f fallback = function
   | [] -> fallback ()
   | (y, v) as h ::t ->
      if pred y then let+ v = f v in (y, v)::t
      else h <::> update_assc_opt pred f fallback t
 
+
 let update_ref f r = r := f !r
 let (!++) r = let i = !r in incr r; i
 			       
 
 
-(** monadic fold_left 
-    - ダメだったらそこで止まって None を返す
-    - 大丈夫なら順々に関数を適用していく
- *)
-let rec fold_left_opt f unit = function
-  | [] -> Some unit
-  | h::t -> f unit h >>= flip (fold_left_opt f) t
 
     
 

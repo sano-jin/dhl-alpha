@@ -7,7 +7,7 @@
 files=$(find $1 | grep '.*.ml.\?$' | grep -v .*debug.*'.ml$')
 # files=$(find $1 | grep .*'.ml$' | grep -v main.ml | grep -v .*debug.*'.ml$')
 # files=$(find $1 | grep -v main.ml | grep -v .*debug.*'.ml$')
-cloc $2 --by-file $files
+cloc $2 --by-file $files | sed -e '1,5d' 
 
 
 

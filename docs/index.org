@@ -5,7 +5,7 @@
 #+OPTIONS: ^:nil
 
 * Docs
-
+  
 ** About
    A minimal implementation of a graph rewriting language Directed HyperLMNtal.
 

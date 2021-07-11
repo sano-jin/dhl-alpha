@@ -21,6 +21,13 @@ let pair x y = (x, y)
 
 
 
+(** triple の操作のためのコンビネータ *)
+let fst3 (a, _, _) = a
+let snd3 (_, b, _) = b
+let thd3 (_, _, c) = c
+
+		 
+
 (** compositional functions *)
 let (<.) f g = fun x -> f (g x)
 let (<..) f g = fun x y -> f (g x y)

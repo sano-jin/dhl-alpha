@@ -92,7 +92,7 @@ let find_atoms = second List.concat <... List.fold_left_map <. find_atom
 
 
 (** ルール左辺を中間命令列に変換する *)
-let match_ lhs_free_non_incidences (redirs, free_indeg_diffs) lhs_local_indegs lhs_atoms =
+let match_ (lhs_local_indegs, lhs_atoms, lhs_free_non_incidences) (redirs, free_indeg_diffs) =
   let env, insts = find_atoms lhs_local_indegs empty_env lhs_atoms in
   let reg_i_of x = List.assoc x env.free2reg_i in
   let check_non_injects =

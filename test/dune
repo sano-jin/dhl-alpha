@@ -1,2 +1,3 @@
 (test
- (name myproject))
+ (name test)
+ (libraries dhl.util dhl.front_end dhl.middle_end))

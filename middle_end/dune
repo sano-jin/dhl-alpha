@@ -1,0 +1,4 @@
+(library
+ (name gen_ic)
+ (public_name dhl.middle_end)
+  (libraries dhl.util dhl.front_end))

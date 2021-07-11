@@ -1,0 +1,9 @@
+(menhir
+  (modules parser))
+  
+(ocamllex lexer)
+
+(library
+ (name front_end)
+ (public_name dhl.front_end)
+  (libraries dhl.util))

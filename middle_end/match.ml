@@ -1,6 +1,6 @@
 (** match.ml  *)
 
-open Breakdown
+open Front_end
 open Util
 open Vm
 open Instruction
@@ -94,7 +94,7 @@ let match_ lhs_free_non_incidences (redirs, free_indeg_diffs) lhs_local_indegs l
     let free_indeg_diffs = List.map (first reg_i_of) free_indeg_diffs in
     CheckRedirs (redirs, free_indeg_diffs)
   in
-  env, insts @ check_non_injects @ [check_redirs]
+  env, List.concat [insts; check_non_injects; [check_redirs]]
 
   
   

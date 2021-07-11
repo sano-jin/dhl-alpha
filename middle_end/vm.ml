@@ -1,7 +1,6 @@
 (** vm.ml *)
 
-open Util
-       
+
 type vm_atom =
   | VMAtom of string * node_ref ref list
   | VMInd of node_ref ref
@@ -36,7 +35,7 @@ let get_free_reg_i env =
   env.free_reg_i, {env with free_reg_i = succ env.free_reg_i}
     
     
-    
+(*    
 (** Free memory fragment of the given address.
     Possibly implemented with `option` type and assign `None`.
  *)
@@ -122,3 +121,4 @@ let update_free_indeg free2addr free_indeg_diffs (x, _) =
 let update_free_indegs free2addr = List.iter <. update_free_indeg free2addr
   
 	       
+ *)

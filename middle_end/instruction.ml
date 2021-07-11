@@ -2,11 +2,15 @@
 
 open Util
 
+
+
 (** レジスタ番号 *)       
 type reg_i = int
 
-(** ファンクタ:= (アトム名, リンクの数) *)
+
+(** ファンクタ := (アトム名, リンクの数) *)
 type functor_ = string * int
+
 
 
 (** ルール左辺におけるマッチングのための中間命令
@@ -64,6 +68,7 @@ type lhs_inst =
 							
 							
 type lhs_insts = lhs_inst list
+
 		
 
 (** ルール右辺におけるマッチングのための中間命令．
@@ -119,14 +124,12 @@ type rhs_inst =
 type rhs_insts = rhs_inst list
 
 
-			       
 
 (** 中間コードを文字列へ変換する
     - 中間命令列のファイルを生成するため
       - CheckRedir 命令はこのままだと構文解析が若干面倒なので，後で変更が必要
     - とデバッグ時の dump のため
  *)
-
 let string_of_functor (p, arity) = Printf.sprintf "'%s'/%d" p arity
 
 let string_of_check_redirs redirs free_indeg_diffs =

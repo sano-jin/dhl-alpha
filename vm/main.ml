@@ -9,28 +9,6 @@ open Util
 let compile = gen_ic <. front_end
 
 
-(** ルールをコンパイルした結果を出力する *)
-let dump_rule i (reg_size, (lhs_insts, rhs_insts)) =
-  prerr_newline ();
-  Printf.eprintf ">>>> rule #%d <<<<\n" i;
-  debug_print "register_size" @@ string_of_int reg_size;
-  debug_print "genereted lhs_insts" @@ string_of_lhs_insts lhs_insts;
-  debug_print "genereted rhs_insts" @@ string_of_rhs_insts rhs_insts
-
-
-(** 初期状態生成のための中間命令列を出力する *)  
-let dump_init_rule (reg_size, insts) =
-  prerr_newline ();
-  prerr_endline ">>>> rule for constructing the initial state <<<<";
-  debug_print "register_size" @@ string_of_int reg_size;
-  debug_print "genereted insts" @@ string_of_rhs_insts insts
-
-       
-let dump_instructions init_insts rules = 
-  dump_init_rule init_insts;
-  List.iteri dump_rule rules
-
-
 			  
 (** Reduce as many as possible.
     Tail recursive (as it should be).
@@ -41,10 +19,10 @@ let rec run_many tracer dumper i rules atom_list =
   | None -> atom_list
   | Some atom_list -> run_many tracer dumper (succ i) rules atom_list
 
+
 			   
 let run_file tracer dumper file_name =
   let init_insts, rules = file_name |> read_file |> compile in
-  (*  dump_instructions init_insts rules; *)
   let initial_atom_list = init_atoms init_insts in
   let final_state = run_many tracer dumper 0 rules initial_atom_list in
   Vm.clean_atom_list final_state;

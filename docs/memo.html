@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-07-12 Mon 23:06 -->
+<!-- 2021-07-13 Tue 00:22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>dhlc-alpha</title>
@@ -232,26 +232,26 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgba8875b">1. コーディングスタイル</a></li>
-<li><a href="#org762bfe5">2. リダイレクトの方針</a>
+<li><a href="#orgb3864c5">1. コーディングスタイル</a></li>
+<li><a href="#orgc4873ae">2. リダイレクトの方針</a>
 <ul>
-<li><a href="#org23377ac">2.1. 効率化に関して</a></li>
+<li><a href="#orga2d2645">2.1. 効率化に関して</a></li>
 </ul>
 </li>
-<li><a href="#org2e9148a">3. プログラム概要</a></li>
-<li><a href="#orgb6e8e02">4. 非単射的マッチングのための手法</a></li>
+<li><a href="#org3d83d16">3. プログラム概要</a></li>
+<li><a href="#orgdf87593">4. 非単射的マッチングのための手法</a></li>
 </ul>
 </div>
 </div>
 
-<div id="orgad414a4" class="figure">
+<div id="org3e3985a" class="figure">
 <p><object type="image/svg+xml" data="./DHL-logo-alpha.svg" class="org-svg">
 Sorry, your browser does not support SVG.</object>
 </p>
 </div>
 
-<div id="outline-container-orgba8875b" class="outline-2">
-<h2 id="orgba8875b"><span class="section-number-2">1</span> コーディングスタイル</h2>
+<div id="outline-container-orgb3864c5" class="outline-2">
+<h2 id="orgb3864c5"><span class="section-number-2">1</span> コーディングスタイル</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 参考：
@@ -271,8 +271,8 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-org762bfe5" class="outline-2">
-<h2 id="org762bfe5"><span class="section-number-2">2</span> リダイレクトの方針</h2>
+<div id="outline-container-orgc4873ae" class="outline-2">
+<h2 id="orgc4873ae"><span class="section-number-2">2</span> リダイレクトの方針</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 とりあえずはインタプリタの実装方針をそのまま流用する
@@ -292,8 +292,8 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-org23377ac" class="outline-3">
-<h3 id="org23377ac"><span class="section-number-3">2.1</span> 効率化に関して</h3>
+<div id="outline-container-orga2d2645" class="outline-3">
+<h3 id="orga2d2645"><span class="section-number-3">2.1</span> 効率化に関して</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 素朴なもの
@@ -331,8 +331,8 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-org2e9148a" class="outline-2">
-<h2 id="org2e9148a"><span class="section-number-2">3</span> プログラム概要</h2>
+<div id="outline-container-org3d83d16" class="outline-2">
+<h2 id="org3d83d16"><span class="section-number-2">3</span> プログラム概要</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 コンパイラは 500 LOC 程度（を目指している）
@@ -345,7 +345,7 @@ Sorry, your browser does not support SVG.</object>
 
 
 <p>
-プログラム構成
+コンパイラ構成
 </p>
 
 <dl class="org-dl">
@@ -366,12 +366,22 @@ Sorry, your browser does not support SVG.</object>
 <li>0 LOC</li>
 </ul></dd>
 </dl>
+
+
+<p>
+仮想マシンは 290 LOC
+</p>
+
+
+<p>
+共用モジュールも含めて全て合わせると 801 LOC になる
+</p>
 </div>
 </div>
 
 
-<div id="outline-container-orgb6e8e02" class="outline-2">
-<h2 id="orgb6e8e02"><span class="section-number-2">4</span> 非単射的マッチングのための手法</h2>
+<div id="outline-container-orgdf87593" class="outline-2">
+<h2 id="orgdf87593"><span class="section-number-2">4</span> 非単射的マッチングのための手法</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 アトムをマッチするときに非単射的かどうかをチェックする
@@ -413,7 +423,7 @@ Sorry, your browser does not support SVG.</object>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Jin SANO</p>
-<p class="date">Created: 2021-07-12 Mon 23:06</p>
+<p class="date">Created: 2021-07-13 Tue 00:22</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

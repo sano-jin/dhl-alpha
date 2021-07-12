@@ -1,62 +1,75 @@
 (** pushatom.ml *)
 
-open Breakdown
+open Gen_ic
 open Util
 open Vm
+
+
+
+(** ルール右辺の命令を一回実行して，更新したアトムリストを返す *)
+let pushout register atom_list =
+  (* node_ref をアトムリストから除去する（メモリ解放はしない） *)
+  let remove node_ref = List.filter ((!=) node_ref) atom_list in
+
+  function
+  | PushAtom (reg_i, indeg, functor_) ->
+     (* ルール右辺で生成する入次数 [indeg]，ファンクタ [functor_] のシンボルアトムを生成し，
+	レジスタ [reg_i] に代入して，アトムリストへ追加する
+      *)
+     let (p, arity) = functor_ in
+     let node_ref = ref (indeg, VMAtom (p, Array.make arity null_ptr)) in
+     register.(reg_i) <- node_ref;
+     node_ref::atom_list
+     
+  | ReplaceAtom (reg_i, functor_) ->
+     (* ファンクタ [functor_] の（シンボル）アトムで，レジスタ [reg_i] が参照する先のアトムを置き換える *)
+     let node_ref = register.(reg_i) in
+     let indeg = fst !node_ref in
+     let (p, arity) = functor_ in
+     node_ref := (indeg, VMAtom (p, Array.make arity null_ptr));
+     atom_list
+    
+  | Redir (reg_i, reg_j) -> 
+  (* [Redir reg_i reg_j] はレジスタ [reg_i] が参照する先のアトムを
+     レジスタ [reg_j] が参照する先のアトムを参照する Indirection アトムで置き換え，
+     アトムリストから [reg_i] を参照していた要素を除去する
+      - 入次数はマッチング末尾の CheckRedirs 命令によってすでにセット済み
+      - 入次数がゼロになっている場合はメモリを解放する
+   *)
+     let node_ref = register.(reg_i) in
+     (* アトムリストからこの参照を除去 *)
+     let atom_list = remove node_ref in 
+     let indeg = fst !node_ref in
+     ( if indeg = 0 then free_atom node_ref (* メモリ解放 *)
+       else 
+	 let node_ref_to = register.(reg_j) in
+	 node_ref := (indeg, VMInd (ref node_ref_to))
+     );
+     atom_list
+     
+  | FreeAtom reg_i -> 
+     (* レジスタ [reg_i] が参照する先のアトムをアトムリストから除去し，メモリを解放する *)
+     let node_ref = register.(reg_i) in
+     (* アトムリストからこの参照を除去 *)
+     let atom_list = remove node_ref in 
+     free_atom node_ref; (* メモリ解放 *)
+     atom_list
        
-let new_atom indeg p = ref (indeg, VMAtom (p, []))
-let push_local_atom local_indegs (x, (p, _)) =
-  let indeg = List.assoc x local_indegs in
-  (x, new_atom indeg p)
-
-let push_local_atoms = List.map <. push_local_atom 
-
-let get_arg (free2addr, local2addr) = function
-  | BFreeLink x -> List.assoc x free2addr
-  | BLocalLink x -> List.assoc x local2addr
-
-let assign_xs xs node_ref =
-  match !node_ref with
-  | indeg, VMAtom (p, _) -> node_ref := (indeg, VMAtom (p, List.map ref xs))
-  | indeg, VMInd _ ->
-     match xs with
-     | [y] -> node_ref := (indeg, VMInd (ref y))
-     | _ -> failwith "Bug: assigning not one argument to an indirection"
+  | SetLink (src_reg_i, port_i, dst_reg_i) ->
+  (* レジスタ [dst_reg_i] が参照する先の（シンボル）アトムの [port_i] 番目のリンクに
+     レジスタ [src_reg_j] に格納されたアドレスを代入する
+   *)
+     let (_, xs) = deref_symbol_atom register.(src_reg_i) in
+     xs.(port_i) <- register.(dst_reg_i);
+     atom_list
 			       
-let update_args link2addr (_, xs) node_ref =
-  let xs = List.map (get_arg link2addr) xs in
-  assign_xs xs node_ref
+  | FailPushout message -> failwith message
+     (* 仮想マシンを（途中で）強制終了する．デバッグのための命令 *)
 
-let update_local_ind link2addr local_or_free2addr (x, p_xs) =
-  let node_ref = List.assoc x local_or_free2addr in
-  update_args link2addr p_xs node_ref
 
-let update_local_inds link2addr = List.iter <. update_local_ind link2addr
+(** ルール右辺の命令を実行する
+    - アトムリストを受け取り，更新したアトムリストを返す
+ *)
+let pushouts = List.fold_left <. pushout
 
-						    
-let update_free_ind link2addr free2addr (x, (p, xs)) =
-  let node_ref = List.assoc x free2addr in 
-  node_ref := (fst !node_ref, VMAtom (p, List.map (ref <. get_arg link2addr) xs))
-				     
-let update_free_inds = List.iter <.. update_free_ind
-
-		
-						    
-let push_redir free2addr (x, y) =
-  let node_ref = List.assoc x free2addr in
-  (* We have already set the indeg at the very end of the matching *)
-  let indeg = fst !node_ref in
-  if indeg = 0 then free_atom node_ref
-  else
-    let y = List.assoc y free2addr in
-    node_ref := (indeg, VMInd (ref y))
-
-let push_redirs = List.iter <. push_redir
-	       
-let push_atoms local_indegs free2addr (local_inds, free_inds, redirs) =
-  let local2addr = push_local_atoms local_indegs local_inds in
-  let link2addr = (free2addr, local2addr) in
-  update_local_inds link2addr local2addr local_inds;
-  update_free_inds link2addr free2addr free_inds;
-  push_redirs free2addr redirs;
-  List.map snd local2addr
+				   

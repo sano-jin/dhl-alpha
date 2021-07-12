@@ -1,7 +1,5 @@
 (** eval.ml *)
 
-open Front_end
-open Gen_ic
 open Util
 open Vm
 open Match
@@ -9,26 +7,26 @@ open Pushout
 
 
        
-(** Try to reduce one step with the given atoms and a rule *)				      
+(** Try to reduce one step with the given atoms and a rule
+    - ルール適用に成功したら Some で包んだ更新された atom_list を返す
+ *)
 let reduce atom_list (reg_size, (lhs_insts, rhs_insts)) =
-  let register = init_register size in
-  
-  let+ env = match_ (redirs, free_indeg_diffs) lhs_local_indegs atom_list lhs_atoms in
-  (*  print_endline "matched"; *)
-  let local_addrs = List.map snd env.local2addr in
-  let redirected_addrs = List.map (flip List.assoc env.free2addr) @@ List.map fst redirs in
-  let atom_list = set_minus_q atom_list @@ local_addrs@redirected_addrs in
-  List.iter free_atom local_addrs;
-  push_atoms rhs_local_indegs env.free2addr rhs @ atom_list
+  (* レジスタの確保 *)
+  let register = init_register reg_size in
+  if match_ register atom_list lhs_insts
+  then Some (pushouts register atom_list rhs_insts)
+  else None
 
-
-
+	 
+	 
 (** Try reduce one step with the given atoms and rules *)
 let run_once = one_of <. reduce
 
 
 
 (** push the initial graph and return their references *)			   
-let init_atoms local_indegs inds =
-    push_atoms local_indegs [] inds
-		      
+let init_atoms (reg_size, rhs_insts) =
+  (* レジスタの確保 *)
+  let register = init_register reg_size in
+  pushouts register [] rhs_insts
+	   

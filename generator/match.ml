@@ -1,6 +1,6 @@
 (** match.ml *)
 
-open Front_end
+open Analyzer
 open Util
 open Register_table
 open Instruction
@@ -33,7 +33,6 @@ let check_ref_neq_of reg_i reg_j = CheckRefNeq (reg_i, reg_j)
 (** アトムのマッチングを行う命令を生成する *)
 let check_atom (p, xs) reg_tbl reg_i =
   let functor_ = (p, List.length xs) in
-  let check_functor = CheckFunctor (reg_i, functor_) in
   let check_ref_neqs =
       let matched_atoms = List.filter ((=) functor_ <. fst) reg_tbl.matched_atoms in
       List.map (check_ref_neq_of reg_i <. snd) matched_atoms
@@ -41,7 +40,7 @@ let check_atom (p, xs) reg_tbl reg_i =
   let reg_tbl = {reg_tbl with matched_atoms = (functor_, reg_i)::reg_tbl.matched_atoms} in
   let xs = List.mapi pair xs in
   let reg_tbl, check_args = List.fold_left_map (uncurry <. check_arg reg_i) reg_tbl xs in
-  reg_tbl, List.concat @@ (check_functor::check_ref_neqs)::check_args
+  reg_tbl, List.concat @@ check_ref_neqs::check_args
 		      
 
 
@@ -79,7 +78,9 @@ let find_atom local_indegs reg_tbl =
        reg_tbl, peak_atom::insts
     | Some reg_i ->
        (* レジスタにすでに格納されているリンクからの参照の場合 *)
-       check_ind local_indegs reg_tbl reg_i ind 
+       let check_functor = CheckFunctor (reg_i, functor_of ind) in
+       let reg_tbl, insts = check_ind local_indegs reg_tbl reg_i ind in	
+       reg_tbl, check_functor::insts 
   in	 
   function
   | BLocalInd (x, _) as ind -> try_deref x reg_tbl.local2reg_i ind
@@ -92,22 +93,16 @@ let find_atoms = second List.concat <... List.fold_left_map <. find_atom
 
 
 (** ルール左辺を中間命令列に変換する *)
-let match_ (lhs_local_indegs, lhs_atoms, lhs_free_non_incidences) (redirs, free_indeg_diffs) =
+let match_ (lhs_local_indegs, lhs_atoms) (redirs, free_indeg_diffs) =
   let reg_tbl, insts = find_atoms lhs_local_indegs empty_reg_tbl lhs_atoms in
   let reg_i_of x = List.assoc x reg_tbl.free2reg_i in
-  let check_non_injects =
-    (* ルール左辺でアトムを参照していない自由リンクが局所リンクと非単射的マッチングをしていないかチェックする *)
-    let check_ref_neq_of reg_i reg_j = CheckRefNeq (reg_i, reg_j) in
-    let check_non_inject_of reg_i = List.map (check_ref_neq_of reg_i <. snd) reg_tbl.local2reg_i in
-    List.concat_map (check_non_inject_of <. reg_i_of) lhs_free_non_incidences
-  in
   let check_redirs =
     (* 不正なリダイレクションを行っていないのかのチェックを行う *)
     let redirs = List.map (first reg_i_of <. second reg_i_of) redirs in
     let free_indeg_diffs = List.map (first reg_i_of) free_indeg_diffs in
     CheckRedirs (redirs, free_indeg_diffs)
   in
-  reg_tbl, List.concat [insts; check_non_injects; [check_redirs]]
+  reg_tbl, insts @ [check_redirs]
 
   
   

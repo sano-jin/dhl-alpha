@@ -3,6 +3,8 @@
 open Util
 open Vm       
 
+
+
 let get_link_name ((ref2link_id, link_id) as env) node_ref =
   second ((^) "L" <. string_of_int) @@
     match List.assq_opt node_ref ref2link_id with
@@ -29,7 +31,7 @@ and dump_atom is_top_level ((dumped_nodes, addr_env) as env) node_ref =
      else
        first (pair dumped_nodes) @@ get_link_name addr_env node_ref
   | VMAtom (p, xs) ->
-     let (env, xs) = List.fold_left_map dump_arg (first (List.cons node_ref) env) @@ List.map (!) xs in
+     let (env, xs) = List.fold_left_map dump_arg (first (List.cons node_ref) env) @@ Array.to_list xs in
      (env, p ^ if xs = [] then ""
 	       else "(" ^ String.concat ", " xs ^ ")")
      
@@ -54,11 +56,11 @@ let rec visit (l, visited) node_ref =
   else
     let visited = node_ref::visited in
     let xs = match snd !node_ref with
-      | VMAtom (_, xs) -> xs
-      | VMInd y -> [y]
+      | VMAtom (_, xs) -> Array.to_list xs
+      | VMInd y -> [!y]
     in
     first (List.cons node_ref)
-    @@ List.fold_left visit (l, visited) @@ List.map (!) xs 
+    @@ List.fold_left visit (l, visited) xs 
 
 (** Topological sort *)
 let tpl_sort = fst <. List.fold_left visit ([], []) 

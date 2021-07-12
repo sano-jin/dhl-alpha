@@ -11,5 +11,9 @@ let () =
      R -> append(nil, L) :- R -> L";
 
   test_compiler
-    "\\X.X -> a(X)"
+    "\\X.X -> a(X)";
+
+  test_compiler
+    "a, a, a :- b"
+
     

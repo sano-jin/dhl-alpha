@@ -1,0 +1,4 @@
+(library
+ (name analyzer)
+ (public_name dhl.analyzer)
+  (libraries dhl.util dhl.parser))

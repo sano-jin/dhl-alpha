@@ -19,18 +19,17 @@ type functor_ = string * int
  *)
 type lhs_inst =
   | PeakAtom of reg_i * functor_
-  (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
-      - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
+  (** アトムリストの先頭から随時，ファンクタが [functor_] であるアトムへの参照を，レジスタ [reg_i] に格納してゆく 
       - failable and possibly rewind
    *)
 
   | CheckFunctor of reg_i * functor_
-  (** reg_i に格納したアトムのファンクタが functor_ であることを確認する
+  (** [reg_i] に格納したアトムのファンクタが [functor_] であることを確認する
       - failable and does not rewind
    *)
 		 
   | CheckIndeg of reg_i * int
-  (** reg_i に格納したアトムの参照カウンタの値が int であることを確認する
+  (** [reg_i] に格納したアトムの参照カウンタの値が [int] であることを確認する
       - 局所リンクに必要なチェック
       - failable and does not rewind
    *)
@@ -96,7 +95,7 @@ type rhs_inst =
 			     
   | Redir of reg_i * reg_i
   (** [Redir reg_i reg_j] はレジスタ [reg_i] が参照する先のアトムをレジスタ [reg_j] が参照する先のアトムを参照する Indirection アトムで置き換え，
-      アトムリストから [reg_j] を参照していた要素を除去する
+      アトムリストから [reg_i] を参照していた要素を除去する
       - リンクの値も正しい値にセットされる
       - 入次数はマッチング末尾の CheckRedirs 命令によってすでにセット済み
         - 入次数がゼロになっている場合はメモリを解放する
@@ -107,7 +106,7 @@ type rhs_inst =
 
   | FreeAtom of reg_i
   (** [FreeAtom reg_i] はレジスタ [reg_i] が参照する先のアトムをアトムリストから除去し，メモリを解放する
-      - ただし，リンクの値は正しい値にセットされない
+      - ただし，リンクの値は正しい値にセットされない <-- ???
       - 入次数はマッチング末尾の CheckRedirs 命令によってすでにセット済み
       - 自由リンクに参照されるアトムを置き換えるための命令
       - シンボルアトムのみ対応

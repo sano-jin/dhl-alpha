@@ -1,5 +1,7 @@
 (** main.ml *)
 
+
+(*
 let usage_msg = "append [-t] [-v] <file1>"
 let verbose = ref false
 let trace = ref false
@@ -26,6 +28,9 @@ let main () =
 		  then fun i atoms -> print_endline @@ string_of_int i ^ ": " ^ dumper atoms
 		  else fun _ _ -> ()
      in  run_file tracer dumper file_name
+
+ *)
+
 
 		  
 let () = Main.main () 

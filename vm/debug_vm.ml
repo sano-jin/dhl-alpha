@@ -2,7 +2,7 @@
 
 open Util
 open Vm
-
+       
        
 type dbg_atom =
     DBGAtom of int * int * (string * int list) (* DBGAtom (addr, indeg, atom_name, addrs) *)
@@ -17,7 +17,7 @@ let rec get_dbg_addr ((addr2link, link_id) as env) (node_ref: node_ref) =
 
 and get_dbg_atom env = function  
   | VMAtom (p, xs) ->
-     let (env, xs_inds) = List.fold_left_map get_dbg_addr env @@ List.map (!) xs in
+     let (env, xs_inds) = List.fold_left_map get_dbg_addr env @@ Array.to_list xs in
      let (xs, inds) = List.split xs_inds in
      (env, ((p, xs), List.concat inds))
   | VMInd x ->

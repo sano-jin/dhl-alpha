@@ -4,6 +4,6 @@
 (ocamllex lexer)
 
 (library
- (name front_end)
- (public_name dhl.front_end)
+ (name parse)
+ (public_name dhl.parser)
   (libraries dhl.util))

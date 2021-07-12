@@ -1,6 +1,6 @@
 (** test_compiler.ml *)
 
-open Front_end
+open Analyzer
 open Gen_ic
 open Util
 
@@ -24,7 +24,7 @@ let dump_init_rule (reg_size, insts) =
 
        
 let test_compiler prog =
-  let init_insts, rules = uncurry gen_ic @@ front_end prog in
+  let init_insts, rules = gen_ic @@ front_end prog in
   dump_init_rule init_insts;
   List.iteri dump_rule rules
   

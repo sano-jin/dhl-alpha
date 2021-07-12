@@ -2,7 +2,7 @@
     Convert local link names to fresh ids and partition atoms and rules.
  *)
 
-open Syntax
+open Parse
 open Util
 
 (** (link_id, link_name_for_debugging) *)       

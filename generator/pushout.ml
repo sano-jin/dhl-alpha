@@ -1,6 +1,6 @@
 (** pushatom.ml *)
 
-open Front_end
+open Analyzer
 open Util
 open Register_table
 open Instruction

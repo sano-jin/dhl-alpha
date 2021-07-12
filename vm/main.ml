@@ -1,8 +1,12 @@
 (** main.ml *)
 
-open Front_end
+open Analyzer
 open Gen_ic
+open Eval
 open Util
+
+
+let compile = gen_ic <. front_end
 
 
 (** ルールをコンパイルした結果を出力する *)
@@ -21,40 +25,30 @@ let dump_init_rule (reg_size, insts) =
   debug_print "register_size" @@ string_of_int reg_size;
   debug_print "genereted insts" @@ string_of_rhs_insts insts
 
-
-
-let compile = uncurry gen_ic <. front_end
-
-
-						       
-let test_compiler prog =
-  let init_insts, rules = compile prog in
+       
+let dump_instructions init_insts rules = 
   dump_init_rule init_insts;
   List.iteri dump_rule rules
-  
 
 
+			  
 (** Reduce as many as possible.
     Tail recursive (as it should be).
  *) 
-let rec run_many tracer dumper i rules atoms =
-  tracer i atoms;
-  match Eval.run_once atoms rules with
-  | None -> atoms
-  | Some atoms -> run_many tracer dumper (succ i) rules atoms
-
+let rec run_many tracer dumper i rules atom_list =
+  tracer i atom_list;
+  match Eval.run_once atom_list rules with
+  | None -> atom_list
+  | Some atom_list -> run_many tracer dumper (succ i) rules atom_list
 
 			   
-let run_file tracer dumper file_name  =
-  match file_name |> read_file |> parse |> breakdown with
-  | ((((local_indegs, []), []), inds), rules) ->
-     let final_state =
-       run_many tracer dumper 0 rules
-       @@ Eval.init_atoms local_indegs @@ classify_inds inds
-     in
-     Vm.clean_atom_list final_state;
-     print_endline @@ "Final state: " ^ dumper final_state
-  | _ -> failwith "free links are not allowed in the initial graph"
+let run_file tracer dumper file_name =
+  let init_insts, rules = file_name |> read_file |> compile in
+  (*  dump_instructions init_insts rules; *)
+  let initial_atom_list = init_atoms init_insts in
+  let final_state = run_many tracer dumper 0 rules initial_atom_list in
+  Vm.clean_atom_list final_state;
+  print_endline @@ "Final state: " ^ dumper final_state
 
 
 

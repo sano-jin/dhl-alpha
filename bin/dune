@@ -1,4 +1,4 @@
 (executable
  (public_name dhl)
  (name main)
- (libraries compiler vm))
+ (libraries dhl.vm))

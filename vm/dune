@@ -1,4 +1,4 @@
 (library
- (name vm_main)
+ (name main)
  (public_name dhl.vm)
- (libraries dhl.util dhl.front_end dhl.middle_end))
+ (libraries dhl.util dhl.generator))

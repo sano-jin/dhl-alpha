@@ -19,8 +19,8 @@ type b_ind =
   | BFreeInd of string * b_atom
   | BRedir of string * string
 
-(** (local_indegs, b_ind list, lhs_free_non_incidences) *)
-type lhs = (int * int) list * b_ind list * string list
+(** (local_indegs, b_ind list) *)
+type lhs = (int * int) list * b_ind list
 
 type free_indeg_diffs = (string * int) list
 				    
@@ -94,9 +94,9 @@ let rec breakdown proc =
 and breakdown_rule (lhs, rhs) =
   let rule = (breakdown lhs, breakdown rhs) in
   check_rule rule;
-  let (((((lhs_local_indegs, lhs_free_indegs), lhs_free_incidences), l_graph), _), ((((rhs_local_indegs, rhs_free_indegs), _), r_graph), _)) = rule in
-  let lhs_free_non_incidences = set_minus (List.map fst lhs_free_indegs) lhs_free_incidences in (* ルール左辺でアトムを参照していない自由リンク *)
+  let ((((lhs_local_indegs, lhs_free_indegs), _), l_graph), _),
+      ((((rhs_local_indegs, rhs_free_indegs), _), r_graph), _) = rule in
   let rhs_graph = classify_inds r_graph in
   let free_indeg_diff = free_indeg_diff lhs_free_indegs rhs_free_indegs in
-  BRule ((lhs_local_indegs, l_graph, lhs_free_non_incidences), free_indeg_diff, (rhs_local_indegs, rhs_graph))
+  BRule ((lhs_local_indegs, l_graph), free_indeg_diff, (rhs_local_indegs, rhs_graph))
 

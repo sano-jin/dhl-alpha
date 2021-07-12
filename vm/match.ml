@@ -1,56 +1,81 @@
 (** match.ml  *)
 
-open Front_end
 open Gen_ic
-open Util
 open Vm
+open Redir
 
-       
-let match_ lhs_inst =
-  | PeakAtom of reg_i * functor_
-  (** アトムリストの先頭から随時アトムへの参照をレジスタ reg_i に格納してゆく 
-      - まだアトムリストはファンクタで分類されていないので，とりあえずは functor_ は必要ない
-      - failable and possibly rewind
-   *)
 
-  | CheckFunctor of reg_i * functor_
-  (** reg_i に格納したアトムのファンクタが functor_ であることを確認する
-      - failable and does not rewind
-   *)
-		 
-  | CheckIndeg of reg_i * int
-  (** reg_i に格納したアトムの参照カウンタの値が int であることを確認する
-      - 局所リンクに必要なチェック
-      - failable and does not rewind
-   *)
-	       
-  | Deref of reg_i * reg_i * int
-  (** [Deref dst_reg_i src_reg_i port_i] は レジスタ [src_reg_i] が参照するアトムの 
-      [port_i] 番目の引数をトラバースしてその先に接続されているシンボルアトムへの参照を
-      レジスタ [dst_reg_i] に格納する
-      - not failable and does not rewind
-   *)
 
-  | CheckRefEq of reg_i * reg_i
-  (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-      レジスタ [reg_j] に格納されているアドレスが等しいことを確認する
-      - failable and does not rewind
-   *)
+(** 巻き戻しの起点にならない命令を一回実行する *)
+let exec_unrewindable_inst register = function
+  | PeakAtom (_, _) -> failwith "Bug: PeakAtom is a rewindable instruction"
+  | CheckFunctor (reg_i, functor_) -> 
+     (* reg_i に格納したシンボルアトムのファンクタが functor_ であることを確認する *)
+     let (p, xs) = deref_symbol_atom register.(reg_i) in
+     (p, Array.length xs) = functor_
+			      
+  | CheckIndeg (reg_i, indeg) ->
+     (* reg_i に格納したアトムの参照カウンタの値が indeg であることを確認する *)
+     let node_ref = register.(reg_i) in
+     fst !node_ref = indeg
+		       
+  | Deref (dst_reg_i, src_reg_i, port_i) ->
+     (* レジスタ [src_reg_i] が参照するアトムの [port_i] 番目の引数をトラバースして
+	その先に接続されているシンボルアトムへの参照をレジスタ [dst_reg_i] に格納する
+      *)
+     let (_, xs) = deref_symbol_atom register.(src_reg_i) in
+     let endpoint_ref = traverse 1 xs.(port_i) in
+     xs.(port_i) <- endpoint_ref;
+     register.(dst_reg_i) <- endpoint_ref;
+     true
 
-  | CheckRefNeq of reg_i * reg_i
-  (** [CheckRefEq reg_i reg_j] は レジスタ [reg_i] に格納されているアドレスと
-      レジスタ [reg_j] に格納されているアドレスが異なることを確認する
-      - failable and does not rewind
-   *)
+  | CheckRefEq (reg_i, reg_j) ->
+     (* レジスタ [reg_i] に格納されているアドレスと
+	レジスタ [reg_j] に格納されているアドレスが等しいことを確認する
+      *)
+     register.(reg_i) == register.(reg_j)
+				    
+  | CheckRefNeq (reg_i, reg_j) ->
+     (* レジスタ [reg_i] に格納されているアドレスと
+	レジスタ [reg_j] に格納されているアドレスが異なることを確認する
+      *)
+     register.(reg_i) != register.(reg_j)
 
-  | CheckRedirs of (reg_i * reg_i) list * (reg_i * int) list
-  (** CheckRedirs redirs free_indeg_diffs
-      - 引数は
-        - リダイレクトされる自由リンクが格納されたレジスタ番号の連想リストと，
-        - 自由リンクが格納されたレジスタと，対応する自由リンクの入次数の変化分の連想リスト
-      - 自由リンクの入次数もセットする
-      - もっと細かい命令に分けるべきな気はする
-      - failable and does not rewind
+  | CheckRedirs (redirs, free_indeg_diffs) ->
+     check_redirs register (redirs, free_indeg_diffs)
+		  
+  | FailMatching message -> failwith message
+     (* 仮想マシンを（途中で）強制終了する．デバッグのための命令 *)
+			
+
+(** ルール左辺のマッチングを行う *)       
+let match_ register atom_list =
+
+  (* 巻き戻しの起点となる命令を実行する
+     - 成功すれば true，失敗すれば false を返す
    *)
-							
-  | FailMatching of string (** 仮想マシンを（途中で）強制終了する．デバッグのための命令 *)
+  let rec find_atom rest_atom_list = function
+    | [] -> true  (* successfully matched *)
+
+    (* アトムリストの先頭から随時，ファンクタが functor_ であるアトムへの参照を，レジスタ reg_i に格納してゆく *)
+    | PeakAtom (reg_i, functor_) ::rest_insts as insts ->
+       ( match rest_atom_list with
+	 | [] -> false  (* もうアトムリストにアトムが残っていない *)
+	 | node_ref::t ->
+	    let (p, xs) = deref_symbol_atom node_ref in
+	    if (p, Array.length xs) <> functor_
+	    then find_atom t insts
+	    else (
+	      register.(reg_i) <- node_ref;
+	      if find_atom atom_list rest_insts then true
+	      else find_atom t insts
+	    )
+       )
+	 
+    | inst::rest_insts ->
+       exec_unrewindable_inst register inst
+       && find_atom atom_list rest_insts
+  in
+  find_atom atom_list
+
+	    

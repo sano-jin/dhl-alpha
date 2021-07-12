@@ -1,15 +1,15 @@
 (** redir.ml  *)
 
 open Util
-open Vm
 
 
 
-let redir2addr free2addr (x, y) = 
-  (List.assoc x free2addr, List.assoc y free2addr)
+(** レジスタからリダイレクトされるアトムへの参照を求める *)
+let redir2addr register (x, y) = (register.(x), register.(y))
 
 
-let redir2addrs = List.map <. redir2addr    
+(** レジスタからリダイレクトされるアトムへの参照のリストを求める *)
+let redir2addrs register = List.map @@ redir2addr register
 
 
     
@@ -27,7 +27,7 @@ let rec traverse_ind redirs visited node_ref =
 let rev_redir rredirs (from, to_) =
   updateq (fun _ -> [from]) (List.cons from) to_ rredirs
 		       
-let rev_redirs = List.fold_left rev_redir [] 
+let rev_redirs_of redirs = List.fold_left rev_redir [] redirs
 
 				
 
@@ -70,9 +70,9 @@ let rec rdfs addr2indeg rev_redirs node_ref =
 
   
 
-(* node_ref からの redirection をチェックする
-   - 不正な間接循環参照を検出した場合は None を返す
-   - そうでない場合はノードと被参照数の連想リストを Some に包んで返す
+(** node_ref からの redirection をチェックする
+    - 不正な間接循環参照を検出した場合は None を返す
+    - そうでない場合はノードと被参照数の連想リストを Some に包んで返す
  *) 
 let ref_count_redir addr2indeg redirs rev_redirs rev_ind_redirs visited node_ref =
   if List.memq node_ref visited then Some [] (* もうすでに訪れたノードなら何もしない *)
@@ -88,35 +88,46 @@ let ref_count_redir addr2indeg redirs rev_redirs rev_ind_redirs visited node_ref
       Some (fst @@ rdfs addr2indeg rev_redirs node_ref)
 
 
-
+(** node_ref のリストについて，redirection をチェックする *) 
 let ref_count_redirs addr2indeg redirs rev_redirs rev_ind_redirs =
-  let node_refs = List.map fst redirs in
-  let rec check_all new_addr2indeg = function
-    | [] -> Some new_addr2indeg
-    | node_ref::rest ->
+  let check new_addr2indeg node_ref =
        let visited = List.map fst new_addr2indeg in
-       let* new_addr2indeg' = 
+       let+ new_addr2indeg' = 
 	 ref_count_redir addr2indeg redirs rev_redirs rev_ind_redirs visited node_ref in
-       check_all (new_addr2indeg' @ new_addr2indeg) rest
+       (new_addr2indeg' @ new_addr2indeg)
   in
-  check_all [] node_refs
+  let node_refs = List.map fst redirs in
+  foldM check [] node_refs
 
 
-  
-let check_redirs (redirs, free_indeg_diffs) env =
-  let redirs = redir2addrs env.free2addr redirs in
+
+(** 自由リンクの参照カウンタの値を [free_indeg_diff] で加算する *)
+let update_free_indeg register (x, free_indeg_diff) =
+  let node_ref = register.(x) in
+  update_ref (first @@ (+) free_indeg_diff) node_ref
+
+
+(** リダイレクトのリストのそれぞれについて，始点の自由リンクの参照カウンタの値を free_indeg_diffs で加算する *)
+let update_free_indegs register = List.iter @@ update_free_indeg register
+
+
+
+(** リダイレクションのチェックのトップレベル *)								  
+let check_redirs register (redirs, free_indeg_diffs) =
+  let redirs = redir2addrs register redirs in
 
   (* 間接参照からの参照を考慮しない被参照数で更新 *)
-  update_free_indegs env.free2addr free_indeg_diffs env.free2addr;
+  update_free_indegs register free_indeg_diffs;
 
   (* 上述で更新した被参照数を取得する 
      - 同一の node_ref を含む可能性がある
        （これを除去する必要はあるかと言われるとない気がするがあまり綺麗ではないのも事実）
    *)
-  let addr2indegs = List.map (fun (_, node_ref) -> (node_ref, fst !node_ref)) env.free2addr in
+  let free_node_refs = List.map (Array.get register <. fst) free_indeg_diffs in
+  let addr2indegs = List.map (fun node_ref -> (node_ref, fst !node_ref)) free_node_refs in
 
   (* 間接参照の逆辺 *)
-  let rev_redirs = rev_redirs redirs in
+  let rev_redirs = rev_redirs_of redirs in
 
   (* 間接参照の逆辺のうち，間接参照ノードを指している逆辺のみ取得 *)
   let rev_ind_redirs = rev_ind_redirs redirs rev_redirs in
@@ -124,11 +135,11 @@ let check_redirs (redirs, free_indeg_diffs) env =
   match ref_count_redirs addr2indegs redirs rev_redirs rev_ind_redirs with
   | None -> (* ダメだったので巻き戻し *)
      let inversed_free_indeg_diffs = List.map (second @@ ( * ) (-1)) free_indeg_diffs in
-     update_free_indegs env.free2addr inversed_free_indeg_diffs env.free2addr; (* rewind *)
-     None
+     update_free_indegs register inversed_free_indeg_diffs; (* rewind *)
+     false
   | Some addr2indegs ->
      let update_indeg (node_ref, indeg) =
        update_ref (first @@ (+) indeg) node_ref
      in
      List.iter update_indeg addr2indegs; 
-     Some env
+     true

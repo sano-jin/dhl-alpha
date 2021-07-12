@@ -1,6 +1,6 @@
 (** gen_ic.ml *)
 
-open Front_end
+open Analyzer
 open Util
 open Register_table
 include Instruction
@@ -39,7 +39,7 @@ let gen_ic_of_init = Pushout.push_atoms empty_reg_tbl
 
 
 (** 初期状態とルールを受け取って，中間命令やレジスタの本数を返す *)					
-let gen_ic init_state rules =
+let gen_ic (init_state, rules) =
   uncurry gen_ic_of_init init_state, gen_ic_of_rules rules
 
 

@@ -3,10 +3,14 @@
 open Util
 open Vm
 
+
+
 let redir2addr free2addr (x, y) = 
   (List.assoc x free2addr, List.assoc y free2addr)
 
+
 let redir2addrs = List.map <. redir2addr    
+
 
     
 (** 順方向に間接ノードを辿る *)
@@ -17,6 +21,7 @@ let rec traverse_ind redirs visited node_ref =
        | Some next_node_ref ->
 	  traverse_ind redirs (node_ref::visited) next_node_ref (* 間接ノードだったのでまだ辿る *)
 
+
 		       
 (** 間接参照の辺を逆にする *)
 let rev_redir rredirs (from, to_) =
@@ -25,9 +30,11 @@ let rev_redir rredirs (from, to_) =
 let rev_redirs = List.fold_left rev_redir [] 
 
 				
+
 (** 間接参照の逆辺のうち，間接参照ノードを指している辺のみを抽出 *)
 let rev_ind_redirs redirs rev_redirs =
   List.filter (flip List.mem_assq redirs <. fst) rev_redirs 
+
 
 
 (** ループを検出した場合は逆方向に間接ノードを辿って参照カウンタの値が全てゼロであることを確認する
@@ -42,7 +49,7 @@ let rec check_zero addr2indeg rev_ind_redirs start visited node_ref  =
     maybe (Some visited) (* 逆辺で辿れるノードが存在しないなら訪れたノードの集合を返す *)
     @@ let+ parents = List.assq_opt node_ref rev_ind_redirs in
        (* 逆辺で辿れる間接ノードについてもチェックする *)
-       fold_opt (check_zero addr2indeg rev_ind_redirs start) visited parents
+       foldM (check_zero addr2indeg rev_ind_redirs start) visited parents
 
 
 			 
@@ -60,6 +67,7 @@ let rec rdfs addr2indeg rev_redirs node_ref =
 	 @@ List.map (rdfs addr2indeg rev_redirs) parents in
        let indeg_diff = List.fold_left (+) 0 parent_indegs in (* 増えた分の被参照数 *)
        ((node_ref, indeg_diff)::List.concat addr2indeg, indeg + indeg_diff)
+
   
 
 (* node_ref からの redirection をチェックする
@@ -79,6 +87,8 @@ let ref_count_redir addr2indeg redirs rev_redirs rev_ind_redirs visited node_ref
     else
       Some (fst @@ rdfs addr2indeg rev_redirs node_ref)
 
+
+
 let ref_count_redirs addr2indeg redirs rev_redirs rev_ind_redirs =
   let node_refs = List.map fst redirs in
   let rec check_all new_addr2indeg = function
@@ -90,6 +100,7 @@ let ref_count_redirs addr2indeg redirs rev_redirs rev_ind_redirs =
        check_all (new_addr2indeg' @ new_addr2indeg) rest
   in
   check_all [] node_refs
+
 
   
 let check_redirs (redirs, free_indeg_diffs) env =

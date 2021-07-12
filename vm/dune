@@ -1,7 +1,4 @@
-(menhir
-  (modules parser))
-  
-(ocamllex lexer)
-
 (library
- (name vm_main))
+ (name vm_main)
+ (public_name dhl.vm)
+ (libraries dhl.util dhl.front_end dhl.middle_end))

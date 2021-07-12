@@ -9,14 +9,14 @@ let functor_of = second List.length
 
 			
 (** 局所リンクに参照されるアトムを生成する命令を生成する *)
-let push_local_atom local_indegs env (x, p_xs) =
-  let reg_i, env = get_free_reg_i env in
+let push_local_atom local_indegs reg_tbl (x, p_xs) =
+  let reg_i, reg_tbl = get_free_reg_i reg_tbl in
   let indeg = List.assoc x local_indegs in
-  env, ((x, reg_i), PushAtom (reg_i, indeg, functor_of p_xs))
+  reg_tbl, ((x, reg_i), PushAtom (reg_i, indeg, functor_of p_xs))
 
 
 (** 局所リンクに参照されるアトムを生成する命令のリストを生成する 
-   - 戻り値は [env, (local2reg_i, push_atoms)]
+   - 戻り値は [reg_tbl, (local2reg_i, push_atoms)]
      - ただし，[local2reg_i] は局所リンク名とレジスタ番号の連想リスト
      - [push_atoms] は PushAtom 命令のリスト
  *)
@@ -36,9 +36,9 @@ let replace_free_atoms = List.map <. replace_free_atom
 	      
 								 
 (** リンクが参照するアドレスが格納されたレジスタ番号を取得する 
-    - [free2reg_i] はマッチング終了後の [env.free2reg_i]
+    - [free2reg_i] はマッチング終了後の [reg_tbl.free2reg_i]
     - [local2reg_i] は [push_local_atoms] によって得られた連想リスト
-      - [env.local2reg_i] ではない
+      - [reg_tbl.local2reg_i] ではない
 *)								 
 let get_arg (free2reg_i, local2reg_i) = function
   | BFreeLink x -> List.assoc x free2reg_i
@@ -82,20 +82,20 @@ let redirs_of = List.map <. redir_of
 
 
 (** 確保すべきレジスタのサイズと生成した命令列を返す *)			       
-let push_atoms env local_indegs (local_inds, free_inds, redirs)  =
-  let free_atoms = free_local_atoms @@ List.map snd env.local2reg_i in
+let push_atoms reg_tbl local_indegs (local_inds, free_inds, redirs)  =
+  let free_atoms = free_local_atoms @@ List.map snd reg_tbl.local2reg_i in
   
-  let env, (local2reg_i, push_atoms) = push_local_atoms local_indegs env local_inds in
+  let reg_tbl, (local2reg_i, push_atoms) = push_local_atoms local_indegs reg_tbl local_inds in
 
-  let replace_atoms = replace_free_atoms env.free2reg_i free_inds in
+  let replace_atoms = replace_free_atoms reg_tbl.free2reg_i free_inds in
   
-  let link2reg_idxs = (env.free2reg_i, local2reg_i) in
-  let set_links_of_free_atoms  = set_links_of_atoms env.free2reg_i link2reg_idxs free_inds in
+  let link2reg_idxs = (reg_tbl.free2reg_i, local2reg_i) in
+  let set_links_of_free_atoms  = set_links_of_atoms reg_tbl.free2reg_i link2reg_idxs free_inds in
   let set_links_of_local_atoms = set_links_of_atoms local2reg_i    link2reg_idxs local_inds in
 
-  let redirs = redirs_of env.free2reg_i redirs in
+  let redirs = redirs_of reg_tbl.free2reg_i redirs in
   
-  env.free_reg_i (* 確保すべきレジスタのサイズ *)
+  reg_tbl.free_reg_i (* 確保すべきレジスタのサイズ *)
   , List.concat [free_atoms; push_atoms; replace_atoms; set_links_of_local_atoms; set_links_of_free_atoms; redirs]
 		
   

@@ -130,7 +130,7 @@ type rhs_insts = rhs_inst list
       - CheckRedir 命令はこのままだと構文解析が若干面倒なので，後で変更が必要
     - とデバッグ時の dump のため
  *)
-let string_of_functor (p, arity) = Printf.sprintf "'%s'/%d" p arity
+let string_of_functor (p, arity) = Printf.sprintf "'%s'_%d" p arity
 
 let string_of_check_redirs redirs free_indeg_diffs =
   let string_of_assoc =

@@ -1,23 +1,38 @@
 (** main.ml *)
 
+open Front_end
+open Gen_ic
 open Util
-open Breakdown
-       
-(** read lines from the given file *)
-let read_file name =
-  let ic = open_in name in
-  let try_read () =
-    try Some (input_line ic) with End_of_file -> None in
-  let rec loop acc = match try_read () with
-    | Some s -> loop (s :: acc)
-    | None ->
-       close_in ic;
-       String.concat "\n" @@ List.rev acc
-  in
-  loop []
 
-(** parse : string -> proc *)
-let parse = Parser.main Lexer.token <. Lexing.from_string
+
+(** ルールをコンパイルした結果を出力する *)
+let dump_rule i (reg_size, (lhs_insts, rhs_insts)) =
+  prerr_newline ();
+  Printf.eprintf ">>>> rule #%d <<<<\n" i;
+  debug_print "register_size" @@ string_of_int reg_size;
+  debug_print "genereted lhs_insts" @@ string_of_lhs_insts lhs_insts;
+  debug_print "genereted rhs_insts" @@ string_of_rhs_insts rhs_insts
+
+
+(** 初期状態生成のための中間命令列を出力する *)  
+let dump_init_rule (reg_size, insts) =
+  prerr_newline ();
+  prerr_endline ">>>> rule for constructing the initial state <<<<";
+  debug_print "register_size" @@ string_of_int reg_size;
+  debug_print "genereted insts" @@ string_of_rhs_insts insts
+
+
+
+let compile = uncurry gen_ic <. front_end
+
+
+						       
+let test_compiler prog =
+  let init_insts, rules = compile prog in
+  dump_init_rule init_insts;
+  List.iteri dump_rule rules
+  
+
 
 (** Reduce as many as possible.
     Tail recursive (as it should be).
@@ -27,6 +42,7 @@ let rec run_many tracer dumper i rules atoms =
   match Eval.run_once atoms rules with
   | None -> atoms
   | Some atoms -> run_many tracer dumper (succ i) rules atoms
+
 
 			   
 let run_file tracer dumper file_name  =
@@ -41,6 +57,7 @@ let run_file tracer dumper file_name  =
   | _ -> failwith "free links are not allowed in the initial graph"
 
 
+
 let usage_msg = "append [-t] [-v] <file1>"
 let verbose = ref false
 let trace = ref false
@@ -53,6 +70,7 @@ let speclist =
   [("-t", Arg.Set trace, "Trace");
    ("-v", Arg.Set verbose, "Output debug information")
   ]
+
 
 (** The top level entry point *)		      
 let main () =

@@ -14,7 +14,7 @@ let dump_rule i (reg_size, (lhs_insts, rhs_insts)) =
   debug_print "genereted rhs_insts" @@ string_of_rhs_insts rhs_insts
 
 
-  
+(** 初期状態生成のための中間命令列を出力する *)  
 let dump_init_rule (reg_size, insts) =
   prerr_newline ();
   prerr_endline ">>>> rule for constructing the initial state <<<<";

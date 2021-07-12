@@ -34,7 +34,7 @@ let gen_ic_of_rules = List.map gen_ic_of_rule
 
 
 (** 初期状態を生成するための中間命令と必要なレジスタの数を返す *)
-let gen_ic_of_init = Pushout.push_atoms empty_env 
+let gen_ic_of_init = Pushout.push_atoms empty_reg_tbl 
 
 
 

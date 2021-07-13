@@ -11,7 +11,7 @@ _Intermediate code generator_
 - [match.ml](match.ml)
   - Generate instructions for the graph pattern matching
 
-- [pushatom.ml](pushatom.ml)
+- [pushout.ml](pushout.ml)
   - Generate instructions for the pushout of the graph
 
 - [generator.ml](generator.ml)

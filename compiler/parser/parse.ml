@@ -1,10 +1,10 @@
-(** front_end.ml *)
+(** Parse *)
 
 open Util
 include Syntax
        
-(** parse : string -> proc 
-    - Returns an AST
-*)
+
+
+(** @return AST *)
 let parse = Parser.main Lexer.token <. Lexing.from_string
 

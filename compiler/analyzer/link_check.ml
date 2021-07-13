@@ -4,6 +4,8 @@
 
 open Util
 open Alpha
+
+
        
 (** A helper function for `collect_incidences` *)
 let collect_incidence (locals, frees) = function
@@ -13,6 +15,7 @@ let collect_incidence (locals, frees) = function
   | AFreeInd (x, _) ->
      if List.mem x frees then failwith @@ "free link " ^ x ^ " is not univalent "
      else (locals, x::frees)
+
 	    
 (** Collect free/local head link (left hand side of `->`) names *)	     
 let collect_incidences = List.fold_left collect_incidence ([], [])
@@ -28,12 +31,14 @@ let rec collect_indeg_arg ((locals, frees) as links) = function
   | AAtom (_, xs) ->
      List.fold_left collect_indeg_arg links xs
 
+
 (** collect indegs of `p_atom` *)
 let collect_indeg links = function
   | AFreeInd  (_, AFreeLink x) -> second (update (const 0) id x) links
   | ALocalInd (_, p) | AFreeInd  (_, p) -> collect_indeg_arg links p
 
 let collect_indegs = List.fold_left collect_indeg
+
 
 (** collect `link_info` from `p_atom list` *)
 let collect_link_info atoms =

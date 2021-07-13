@@ -1,15 +1,11 @@
 (** main.ml *)
 
-open Analyzer
-open Generator
+open Compiler
 open Eval
 open Util
 
 
-let compile = gen_ic <. front_end
 
-
-			  
 (** Reduce as many as possible.
     Tail recursive (as it should be).
  *) 

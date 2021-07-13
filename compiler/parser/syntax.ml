@@ -1,4 +1,4 @@
-(** syntax.ml *)
+(** Syntax *)
 
 (** argument of an atom *)
 type arg =

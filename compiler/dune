@@ -1,0 +1,4 @@
+(library
+ (name compiler)
+ (public_name dhl.compiler)
+  (libraries dhl.util dhl.parser dhl.analyzer dhl.generator))

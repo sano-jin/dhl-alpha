@@ -1,9 +1,13 @@
-(** util.ml *)
+(** Utility functions.
+    
+*)
 
 (** 基本的なコンビネータなど *)
 
 
 (** some very basic combinators *)
+
+(** *)
 let flip f x y = f y x  
 
 let id x = x
@@ -13,15 +17,24 @@ let curry f x y = f (x, y)
 let uncurry f (x, y) = f x y
 
 
-			 
+		 
 (** tuple の操作のためのコンビネータ *)
-let second f (a, b) = (a, f b)
+
+(** *)
 let first f (a, b) = (f a, b)
+
+(** [second f (1, 2)] returns [(1, f 2)] *)
+let second f (a, b) = (a, f b)
+
 let pair x y = (x, y)
 
 
 
-(** triple の操作のためのコンビネータ *)
+(** triple の操作のためのコンビネータ 
+    - いらないかも
+*)
+
+(** *)
 let fst3 (a, _, _) = a
 let snd3 (_, b, _) = b
 let thd3 (_, _, c) = c
@@ -29,13 +42,35 @@ let thd3 (_, _, c) = c
 		 
 
 (** compositional functions *)
+
+(** *)
 let (<.) f g = fun x -> f (g x)
 let (<..) f g = fun x y -> f (g x y)
 let (<...) f g = fun x y z -> f (g x y z)
 
 
 
+(** either3 *)
+type ('a, 'b, 'c) either3 =
+  | Left3 of 'a
+  | Middle3 of 'b
+  | Right3 of 'c
+
+
+(** [partition_map] for [Either3] type *)
+let partition_map3 f =
+  let helper (l, m, r) x = match f x with
+    | Left3   a -> (a::l, m, r)
+    | Middle3 b -> (l, b::m, r)
+    | Right3  c -> (l, m, c::r)
+  in
+  List.fold_left helper ([], [], []) 
+
+	 
+
 (** monadic combinators for the Option type *)
+
+(** *)
 let (>>=) = Option.bind
 let ( let* ) = Option.bind
 
@@ -62,16 +97,20 @@ let maybe default = function
 
 
 (** monadic combinators for the traversible type *)
+
+(** *)
 let (<::>) h t = List.cons h <$> t
 
-(** monadic fold_left *)
+(** monadic [fold_left] *)
 let rec foldM f acc = function
   | [] -> Some acc
   | h::t -> f acc h >>= flip (foldM f) t			     
 
 
 
-(** 集合演算（Set を用いるようにリファクタリングしても良いかも） *)
+(** 集合演算
+    - Set を用いるようにリファクタリングしても良いかも 
+*)
 let set_minus l r = List.filter (not <. flip List.mem r) l
 let set_minus_q l r = List.filter (not <. flip List.memq r) l
 let sym_diff l r = set_minus l r @ set_minus r l
@@ -84,18 +123,25 @@ let partitionEithers l = List.partition_map id l
 
 (** zip/unzip *)
 
-(** monadic combine (possibly renamed as [safe_combine]) *)
+(** uncurried monadic combine (possibly renamed as [safe_combine]) *)
 let rec uncurried_safe_unzip = function
   | ([], []) -> Some []
   | (xh::xt, yh::yt) -> (xh, yh) <::> uncurried_safe_unzip (xt, yt)
   | _ -> None
 
-
+(** monadic combine (possibly renamed as [safe_combine]) *)
 let safe_unzip t = curry uncurried_safe_unzip t
+
+
+(** リストのそれぞれの要素に対して定数をペアにする *)
 let zip_const c = List.map @@ flip pair c
 
 
 
+(** マップオブジェクト 
+    - Map を用いるようにリファクタリングした方が良い（と思われる）
+*)
+				   
 (** 更新不可なマップオブジェクト
     - 同一のキーに対して，異なる値を挿入しようとしたら，例外 [Bug: updating] を投げる
  *)
@@ -132,7 +178,12 @@ let rec update_assc_opt pred f fallback = function
      else h <::> update_assc_opt pred f fallback t
 
 
+(** 参照型のためのコンビネータ *)
 let update_ref f r = r := f !r
+
+(** 参照型の整数をインクリメントした後に，元の値を返す
+    - いらないかも
+ *)			    
 let (!++) r = let i = !r in incr r; i
 			       
 
@@ -147,9 +198,14 @@ let (!++) r = let i = !r in incr r; i
 let indent n = (^) @@ String.make (4 * n) ' '
 
 
+
 (** 入出力のための関数 *)
 
-(** デバッグ用の出力を行う *)
+
+(** デバッグ用の出力を行う
+    - 標準エラー出力に出す
+    - TODO: カラフルにしてみたい
+ *)
 let debug_print description message =
   prerr_endline @@ ">>>> " ^ description;
   prerr_endline message;

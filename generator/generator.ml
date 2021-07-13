@@ -15,12 +15,12 @@ let gen_ic_of_rule
 	     , free_indeg_diffs
 	     , (rhs_local_indegs, ((_, _, redirs) as rhs)))) =
 
-  let env, lhs_insts =
+  let reg_tbl, lhs_insts =
     Match.match_ lhs (redirs, free_indeg_diffs) in
   (* debug_print "genereted lhs_insts" @@ string_of_lhs_insts lhs_insts; *)
   
   let reg_size, rhs_insts =
-    Pushout.push_atoms env rhs_local_indegs rhs in
+    Pushout.push_atoms reg_tbl rhs_local_indegs rhs in
   (* debug_print "genereted rhs_insts" @@ string_of_rhs_insts rhs_insts;  *)
   (* debug_print "register_size" @@ string_of_int reg_size; *)
 

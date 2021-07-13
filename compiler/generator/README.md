@@ -5,7 +5,7 @@ _Intermediate code generator_
 - [instruction.ml](instruction.ml)
   - Definitions for intermediate instructions
 
-- [register_table.ml](table.ml)
+- [register_table.ml](register_table.ml)
   - Associate each links to the assigned registers
 
 - [match.ml](match.ml)

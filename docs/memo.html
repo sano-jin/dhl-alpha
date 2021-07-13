@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-07-13 Tue 00:22 -->
+<!-- 2021-07-13 Tue 10:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>dhlc-alpha</title>
+<title>dhl-alpha</title>
 <meta name="generator" content="Org mode" />
 <meta name="author" content="Jin SANO" />
 <style type="text/css">
@@ -224,7 +224,7 @@
 </head>
 <body>
 <div id="content">
-<h1 class="title">dhlc-alpha
+<h1 class="title">dhl-alpha
 <br />
 <span class="subtitle">A minimal compiler and runtime for a language based on graph rewriting.</span>
 </h1>
@@ -232,27 +232,84 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb3864c5">1. コーディングスタイル</a></li>
-<li><a href="#orgc4873ae">2. リダイレクトの方針</a>
+<li><a href="#org43e43e3">1. docs</a>
 <ul>
-<li><a href="#orga2d2645">2.1. 効率化に関して</a></li>
+<li><a href="#orgee7ae17">1.1. プログラム概要</a></li>
+<li><a href="#org3d2904b">1.2. コーディングスタイル</a></li>
+<li><a href="#org5f88771">1.3. リダイレクトの方針</a>
+<ul>
+<li><a href="#orgc3803a3">1.3.1. 効率化に関して</a></li>
 </ul>
 </li>
-<li><a href="#org3d83d16">3. プログラム概要</a></li>
-<li><a href="#orgdf87593">4. 非単射的マッチングのための手法</a></li>
+<li><a href="#orgac84e9d">1.4. 非単射的マッチングのための手法</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 
-<div id="org3e3985a" class="figure">
+<div id="org483043b" class="figure">
 <p><object type="image/svg+xml" data="./DHL-logo-alpha.svg" class="org-svg">
 Sorry, your browser does not support SVG.</object>
 </p>
 </div>
 
-<div id="outline-container-orgb3864c5" class="outline-2">
-<h2 id="orgb3864c5"><span class="section-number-2">1</span> コーディングスタイル</h2>
+<div id="outline-container-org43e43e3" class="outline-2">
+<h2 id="org43e43e3"><span class="section-number-2">1</span> docs</h2>
 <div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-orgee7ae17" class="outline-3">
+<h3 id="orgee7ae17"><span class="section-number-3">1.1</span> プログラム概要</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+コンパイラは 500 LOC 程度（を目指している）
+</p>
+<ul class="org-ul">
+<li>現在全部で 429 LOC</li>
+<li>パーザ部分を抜いて 324 LOC</li>
+<li>ただし， <code>util.ml</code> の 82 LOC が別にある</li>
+</ul>
+
+
+<p>
+コンパイラ構成
+</p>
+
+<dl class="org-dl">
+<dt>parse</dt><dd>字句解析・構文解析
+<ul class="org-ul">
+<li>105 LOC</li>
+</ul></dd>
+<dt>analyzer</dt><dd>意味解析を行う
+<ul class="org-ul">
+<li>142 LOC</li>
+</ul></dd>
+<dt>generator</dt><dd>中間命令列を生成する
+<ul class="org-ul">
+<li>182 LOC</li>
+</ul></dd>
+<dt>optimizer</dt><dd>（未実装だが）アトム再利用・編み上げなどの最適化を行う（かも）
+<ul class="org-ul">
+<li>0 LOC</li>
+</ul></dd>
+</dl>
+
+
+<p>
+仮想マシンは 290 LOC
+</p>
+
+
+<p>
+共用モジュールも含めて全て合わせると 801 LOC になる
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org3d2904b" class="outline-3">
+<h3 id="org3d2904b"><span class="section-number-3">1.2</span> コーディングスタイル</h3>
+<div class="outline-text-3" id="text-1-2">
 <p>
 参考：
 <a href="https://ocaml.org/learn/tutorials/guidelines.html">https://ocaml.org/learn/tutorials/guidelines.html</a>
@@ -271,9 +328,9 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-orgc4873ae" class="outline-2">
-<h2 id="orgc4873ae"><span class="section-number-2">2</span> リダイレクトの方針</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org5f88771" class="outline-3">
+<h3 id="org5f88771"><span class="section-number-3">1.3</span> リダイレクトの方針</h3>
+<div class="outline-text-3" id="text-1-3">
 <p>
 とりあえずはインタプリタの実装方針をそのまま流用する
 </p>
@@ -292,9 +349,9 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-orga2d2645" class="outline-3">
-<h3 id="orga2d2645"><span class="section-number-3">2.1</span> 効率化に関して</h3>
-<div class="outline-text-3" id="text-2-1">
+<div id="outline-container-orgc3803a3" class="outline-4">
+<h4 id="orgc3803a3"><span class="section-number-4">1.3.1</span> 効率化に関して</h4>
+<div class="outline-text-4" id="text-1-3-1">
 <p>
 素朴なもの
 </p>
@@ -331,58 +388,9 @@ Sorry, your browser does not support SVG.</object>
 </div>
 
 
-<div id="outline-container-org3d83d16" class="outline-2">
-<h2 id="org3d83d16"><span class="section-number-2">3</span> プログラム概要</h2>
-<div class="outline-text-2" id="text-3">
-<p>
-コンパイラは 500 LOC 程度（を目指している）
-</p>
-<ul class="org-ul">
-<li>現在全部で 429 LOC</li>
-<li>パーザ部分を抜いて 324 LOC</li>
-<li>ただし， <code>util.ml</code> の 82 LOC が別にある</li>
-</ul>
-
-
-<p>
-コンパイラ構成
-</p>
-
-<dl class="org-dl">
-<dt>parse</dt><dd>字句解析・構文解析
-<ul class="org-ul">
-<li>105 LOC</li>
-</ul></dd>
-<dt>analyzer</dt><dd>意味解析を行う
-<ul class="org-ul">
-<li>142 LOC</li>
-</ul></dd>
-<dt>generator</dt><dd>中間命令列を生成する
-<ul class="org-ul">
-<li>182 LOC</li>
-</ul></dd>
-<dt>optimizer</dt><dd>（未実装だが）アトム再利用・編み上げなどの最適化を行う
-<ul class="org-ul">
-<li>0 LOC</li>
-</ul></dd>
-</dl>
-
-
-<p>
-仮想マシンは 290 LOC
-</p>
-
-
-<p>
-共用モジュールも含めて全て合わせると 801 LOC になる
-</p>
-</div>
-</div>
-
-
-<div id="outline-container-orgdf87593" class="outline-2">
-<h2 id="orgdf87593"><span class="section-number-2">4</span> 非単射的マッチングのための手法</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-orgac84e9d" class="outline-3">
+<h3 id="orgac84e9d"><span class="section-number-3">1.4</span> 非単射的マッチングのための手法</h3>
+<div class="outline-text-3" id="text-1-4">
 <p>
 アトムをマッチするときに非単射的かどうかをチェックする
 </p>
@@ -421,9 +429,10 @@ Sorry, your browser does not support SVG.</object>
 </div>
 </div>
 </div>
+</div>
 <div id="postamble" class="status">
 <p class="author">Author: Jin SANO</p>
-<p class="date">Created: 2021-07-13 Tue 00:22</p>
+<p class="date">Created: 2021-07-13 Tue 10:39</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

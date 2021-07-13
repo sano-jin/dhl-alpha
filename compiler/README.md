@@ -1,17 +1,16 @@
-# Analyzer
-_Semantic analyzer_
+# Compiler
 
 
-- [alpha.ml](alpha.ml)
-  - Convert local link names to fresh ids and partition atoms and rules
+- [parser](parser)
+  - Lexical/Syntax analyzer
 
-- [link_check.ml](link_check.ml)
-  - Collect link information and check them
+- [analyzer](analyzer)
+  - Semantic analyzer
 
-- [breakdown.ml](breakdown.ml)
-  - Check rule conditions and break down atoms
+- [generator](generator)
+  - Intermediate code generator
 
-- [analyzer.ml](analyzer.ml)
-  - The toplevel of the front end
+- [compiler.ml](compiler.ml)
+  - The toplevel of the compiler
   
   

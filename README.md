@@ -13,7 +13,7 @@ _Experimental_
 ### Installation
 ```bash
 git clone https://github.com/sano-jin/dhl-alpha
-cd dhlc-alpha
+cd dhl-alpha
 opam install .
 dune build
 ```

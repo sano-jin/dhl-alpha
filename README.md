@@ -4,6 +4,7 @@
 
 A minimal compiler and runtime for a language based on graph rewriting.
 
+_Experimental_
 
 ## Getting Started
 ### Prerequisites

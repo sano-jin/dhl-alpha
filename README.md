@@ -1,4 +1,4 @@
-# dhlc-alpha
+# dhl-alpha
 
 ![logo](./docs/DHL-logo-alpha.svg)
 
@@ -11,7 +11,7 @@ A minimal compiler and runtime for a language based on graph rewriting.
 
 ### Installation
 ```bash
-git clone https://github.com/sano-jin/dhlc-alpha
+git clone https://github.com/sano-jin/dhl-alpha
 cd dhlc-alpha
 opam install .
 dune build

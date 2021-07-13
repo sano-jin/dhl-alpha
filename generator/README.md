@@ -1,4 +1,6 @@
-# Middle end
+# Generator
+_Intermediate code generator_
+
 
 - [instruction.ml](instruction.ml)
   - Definitions for intermediate instructions
@@ -12,7 +14,7 @@
 - [pushatom.ml](pushatom.ml)
   - Generate instructions for the pushout of the graph
 
-- [gen_ic.ml](gen_ic.ml)
+- [generator.ml](generator.ml)
   - The toplevel of the intermediate code generator
 
 

@@ -1,6 +1,6 @@
 (** match.ml  *)
 
-open Gen_ic
+open Generator
 open Vm
 open Redir
 

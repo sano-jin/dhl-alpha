@@ -1,7 +1,7 @@
 (** test_compiler.ml *)
 
 open Analyzer
-open Gen_ic
+open Generator
 open Util
 
 

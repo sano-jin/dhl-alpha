@@ -1,4 +1,4 @@
 (library
- (name gen_ic)
+ (name generator)
  (public_name dhl.generator)
  (libraries dhl.util dhl.analyzer))

@@ -1,6 +1,6 @@
 (** pushatom.ml *)
 
-open Gen_ic
+open Generator
 open Util
 open Vm
 

@@ -1,4 +1,4 @@
-(** gen_ic.ml *)
+(** generator.ml *)
 
 open Analyzer
 open Util

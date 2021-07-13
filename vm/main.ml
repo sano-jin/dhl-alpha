@@ -1,7 +1,7 @@
 (** main.ml *)
 
 open Analyzer
-open Gen_ic
+open Generator
 open Eval
 open Util
 

@@ -230,3 +230,27 @@ let read_file name =
 
 
 		
+
+(** グラフ関連の関数 *)
+
+type 'a node = int * ('a * int list)  (** ノード := (頂点 id, (ラベル, 出ていく辺のリスト)) *)
+
+       
+
+(** A helper function for [tpl_sort]
+    Notice this function will also return indirections that are not in the atom_list
+    but traversable from it.
+*)  
+let rec visit graph (acc, visited) v =
+  let (_, edges) as node = List.assoc v graph in
+  if List.mem v visited then (acc, visited)
+  else
+    let visited = v::visited in
+    let acc, visited = List.fold_left (visit graph) (acc, visited) edges in
+    node::acc, visited
+
+
+(** Topological sort *)
+let tpl_sort graph =
+  fst @@ List.fold_left (visit graph) ([], []) @@ List.map fst graph
+       

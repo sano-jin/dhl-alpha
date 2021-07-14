@@ -35,7 +35,7 @@ let deref_symbol_atom node_ref =
 
 
 (** Free memory fragment of the given address.
-    Possibly implemented with `option` type and assign `None`.
+    Possibly implemented with [option] type and assign [None].
  *)
 let free_atom node_ref =
   match !node_ref with
@@ -48,7 +48,7 @@ let free_atom node_ref =
     There is no worring of circulating indirection
     (if that exists, then the basic design is wrong).
     If the given pointer points to an indirection atom, 
-    decrease the reference counter by the given `ref_count` 
+    decrease the reference counter by the given [ref_count] 
     (which is 1 if this is pointed by a symbol atom)
     @return the reference to a symbol atom
  *)

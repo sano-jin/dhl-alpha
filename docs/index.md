@@ -30,6 +30,7 @@
     - 意味解析を行う
 - generator: 182 LOC
     - 中間命令列を生成する
+	- [中間命令列の一覧](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/Generator__/Instruction/index.html)
 
 ### VM
 - vm: 309 LOC

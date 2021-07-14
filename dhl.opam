@@ -12,7 +12,7 @@ bug-reports: "https://github.com/sano-jin/dhl-alpha/issues"
 depends: [
   "menhir" {>= "20210419"}
   "dune" {>= "2.8" & > "1.5"}
-  "odoc" {with-doc}
+  "odoc" {>= "1.5.3"}
 ]
 build: [
   ["dune" "subst"] {dev}

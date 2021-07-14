@@ -76,10 +76,11 @@ let functor_sort =
   let get_functor = second Array.length <. deref_symbol_atom in
   let compare_node_refs n1 n2 =
     let (p1, arity1), (p2, arity2) = get_functor n1, get_functor n2 in
-    let p1_p2 = String.compare p2 p1 in
-    if p1_p2 = 0 then arity2 - arity1 else p1_p2
+    let p2_p1 = String.compare p2 p1 in
+    if p2_p1 = 0 then arity2 - arity1 else p2_p1
   in    
   List.sort compare_node_refs
+
 
   
 (** Pretty printer for printing nodes *)

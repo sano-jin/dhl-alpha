@@ -38,4 +38,4 @@ jobs:
 
       - run: test/test-colorless.sh
 
-      - run: script/gen_docs.sh
+      - run: scripts/gen_docs.sh

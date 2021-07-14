@@ -1,9 +1,10 @@
-(** alpha.ml 
-    Convert local link names to fresh ids and partition atoms and rules.
+(** Convert local link names to fresh ids and partition atoms and rules.
  *)
 
 open Parse
 open Util
+
+
 
 (** (link_id, link_name_for_debugging) *)       
 type local_link = int * string  
@@ -17,15 +18,17 @@ type a_atom =
   | ALocalInd of local_link * a_arg
   | AFreeInd of string * a_arg
 
+
 (** (local_id, local_indeg) list, (free_name, free_indeg) list *)
 type indegs = (int * int) list * (string * int) list
+
 
 (** (indegs, free_incidence list) *)
 type link_info = indegs * string list
 
 				 
 				 
-(** A helper function for `prep_proc`
+(** A helper function for [prep_proc]
     Convert local link names to ids *)     
 let rec alpha_arg env = function
   | Atom (p, xs) -> AAtom (p, List.map (alpha_arg env) xs)
@@ -33,7 +36,8 @@ let rec alpha_arg env = function
 	      | None   -> AFreeLink x
 	      | Some i -> ALocalLink (i, x)
 				     
-(** A helper function for `alpha`
+
+(** A helper function for [alpha]
     Convert local link names to ids and classify atoms and rules *) 
 let rec alpha_proc env link_id = function
   | Zero -> (link_id, [])
@@ -51,6 +55,7 @@ let rec alpha_proc env link_id = function
   | New  (x, p) ->
      alpha_proc ((x, link_id)::env) (succ link_id) p
   | Rule (l, r) -> (link_id, [Either.Right (l, r)])
+
 
 (** Convert local link names to fresh ids and partition atoms and rules *)     
 let alpha = second partitionEithers <. alpha_proc [] 0

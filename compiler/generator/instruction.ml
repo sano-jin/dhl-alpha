@@ -1,4 +1,4 @@
-(** instruction.ml *)
+(** Instructions of the intermediate code *)
 
 open Util
 

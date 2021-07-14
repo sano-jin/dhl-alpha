@@ -51,7 +51,7 @@ let dump_ind ((dumped_nodes, addr_env) as env) node_ref =
 
 
 
-(** A helper function for `tpl_sort` 
+(** A helper function for [tpl_sort]
     Notice this function will also return indirections that are not in the atom_list
     but traversable from it.
 *)  

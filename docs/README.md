@@ -16,22 +16,24 @@ https://github.com/sano-jin/dhl-alpha
 
 
 ## プログラム構成
+全部で 822 LOC
 
-コンパイラは現在全部で 429 LOC
-（パーザ部分を抜いて 324 LOC）
+### Compiler
 
 - parse: 105 LOC
     - 字句解析・構文解析を行う
-- analyzer: 142 LOC
+- analyzer: 139 LOC
     - 意味解析を行う
 - generator: 182 LOC
     - 中間命令列を生成する
-- vm: 290 LOC
-    - 仮想マシン
-- util: 82 LOC
-    - 共用モジュール
 
-共用モジュールも含めて全て合わせると 801 LOC になる
+### VM
+- vm: 309 LOC
+    - 仮想マシン
+
+### Utility
+- util: 87 LOC
+    - 共用モジュール
 
 
 

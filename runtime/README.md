@@ -1,15 +1,15 @@
-# VM
-_Virtual Machine_
+# Runtime
+_Runtime environment_
 
 
 - [vm.ml](vm.ml)
   - Type definition of an atom and some primitive functionalities
 
-- [dump.ml](dump.ml)
+- [pretty.ml](pretty.ml)
   - Pretty printer for the graph
 
-- [debug_vm.ml](debug_vm.ml)
-  - Dumper for the graph
+- [dumpe.ml](dump.ml)
+  - Dumper for debugging purppose
 
 - [match.ml](match.ml)
   - Perform graph pattern matching

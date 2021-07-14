@@ -7,7 +7,7 @@ open Alpha
 
 
        
-(** A helper function for `collect_incidences` *)
+(** A helper function for [collect_incidences] *)
 let collect_incidence (locals, frees) = function
   | ALocalInd ((x, link_name), _) ->
      if List.mem x locals then failwith @@ "local link " ^ link_name ^ " is not univalent"
@@ -17,12 +17,12 @@ let collect_incidence (locals, frees) = function
      else (locals, x::frees)
 
 	    
-(** Collect free/local head link (left hand side of `->`) names *)	     
+(** Collect free/local head link (left hand side of [->]) names *)	     
 let collect_incidences = List.fold_left collect_incidence ([], [])
 	    
 
 					
-(** collect indegs of `p_arg` and also check the serial condition *)
+(** collect indegs of [p_arg] and also check the serial condition *)
 let rec collect_indeg_arg ((locals, frees) as links) = function
   | ALocalLink (x, link_name) ->
      (update (fun _ -> failwith @@ link_name ^ " is not serial") succ x locals, frees)
@@ -32,7 +32,7 @@ let rec collect_indeg_arg ((locals, frees) as links) = function
      List.fold_left collect_indeg_arg links xs
 
 
-(** collect indegs of `p_atom` *)
+(** collect indegs of [p_atom] *)
 let collect_indeg links = function
   | AFreeInd  (_, AFreeLink x) -> second (update (const 0) id x) links
   | ALocalInd (_, p) | AFreeInd  (_, p) -> collect_indeg_arg links p
@@ -40,7 +40,7 @@ let collect_indeg links = function
 let collect_indegs = List.fold_left collect_indeg
 
 
-(** collect `link_info` from `p_atom list` *)
+(** collect [link_info] from [p_atom list] *)
 let collect_link_info atoms =
   let (_, free_incidences) as links = collect_incidences atoms in
   let indegs =
@@ -52,7 +52,7 @@ let collect_link_info atoms =
 
        
 (** Check link condition of the given rule.
-    Uses the collected link_info on lhs/rhs returned by `collect_link_info`.
+    Uses the collected link_info on lhs/rhs returned by [collect_link_info].
  *)
 let check_link_cond ((lhs_indegs, lhs_free_incidences),
 		     (rhs_indegs, rhs_free_incidences)) =

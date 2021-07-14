@@ -8,8 +8,8 @@ def extract_result(line):
         return word[0] + ";"
     else:
         return ", ".join(word[2:]) + " -> " + word[0] +";"
-    
-ret = subprocess.run("ocamldep -one-line -native -I " + sys.argv[1] + " " + sys.argv[1] + "/*", shell=True, capture_output=True)
+
+ret = subprocess.run("ocamldep -one-line -native -I " + sys.argv[1] + " " + sys.argv[1] + "/**", shell=True, capture_output=True)
 lines = ret.stdout.decode("utf-8").splitlines()
 lines = list(map(extract_result, lines))
 result = "digraph G {\n" + "\n".join(lines) + "\n}"

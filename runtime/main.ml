@@ -21,7 +21,7 @@ let run_file tracer dumper file_name =
   let init_insts, rules = file_name |> read_file |> compile in
   let initial_atom_list = init_atoms init_insts in
   let final_state = run_many tracer dumper 0 rules initial_atom_list in
-  Vm.clean_atom_list final_state;
+  Eval.clean_atom_list final_state;
   print_endline @@ "Final state: " ^ dumper final_state
 
 

@@ -27,7 +27,7 @@ let first f (a, b) = (f a, b)
 let second f (a, b) = (a, f b)
 
 let pair x y = (x, y)
-
+let swap (x, y) = (y, x)
 
 
 (** triple の操作のためのコンビネータ 
@@ -113,6 +113,8 @@ let rec foldM f acc = function
 *)
 let set_minus l r = List.filter (not <. flip List.mem r) l
 let set_minus_q l r = List.filter (not <. flip List.memq r) l
+let set_union_q l r = set_minus_q l r @ r
+let set_unions_q ls = List.fold_left set_union_q [] ls
 let sym_diff l r = set_minus l r @ set_minus r l
 
 

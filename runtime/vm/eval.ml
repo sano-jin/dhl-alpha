@@ -1,7 +1,7 @@
 (** eval.ml *)
 
 open Util
-open Vm
+include Vm
 open Match
 open Pushout
 

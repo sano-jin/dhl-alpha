@@ -58,7 +58,7 @@ let get_dump_atoms atom_list =
 (************************************************)
        
 
-
+(*
 
 (** 参照とアドレスの対応を管理するための環境 *)
 type addr_tbl = {
@@ -115,6 +115,8 @@ let get_dump_atoms atom_list =
     List.split @@ snd @@ List.fold_left_map get_dump_ind init_addr_tbl link2node_ref in
   (dbg_atoms, List.concat inds)
 
+ *)
+
 
     
 let string_of_dump_atom = function
@@ -123,8 +125,6 @@ let string_of_dump_atom = function
      ^ p ^ " [" ^ String.concat ", " (List.map ((^) "#" <. string_of_int) xs) ^ "]"
 
 let dbg_dump atom_list =
-  let (dbg_atoms, inds) = get_dump_atoms atom_list in
-  let (dbg_atoms, inds) =
-    (List.map string_of_dump_atom dbg_atoms, List.map string_of_dump_atom inds)
-  in
-  "\n" ^ String.concat "\n" (inds @ dbg_atoms) ^ "\n"
+  let dump_atoms =
+    List.map string_of_dump_atom @@ get_dump_atoms atom_list in
+  "\n" ^ String.concat "\n" dump_atoms ^ "\n"

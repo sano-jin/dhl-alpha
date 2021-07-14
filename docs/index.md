@@ -16,23 +16,30 @@
 
 
 ## プログラム構成
+
 全部で 822 LOC
 
-### Compiler
+[ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
 
-- parse: 105 LOC
+### [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler)
+
+- [parser](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/parser):
+  105 LOC
     - 字句解析・構文解析を行う
-- analyzer: 139 LOC
+- [analyzer](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/analyzer):
+  139 LOC
     - 意味解析を行う
-- generator: 182 LOC
+- [generator](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/generator):
+  182 LOC
     - 中間命令列を生成する
 
-### VM
-- vm: 309 LOC
-    - 仮想マシン
+### Runtime
+- [runtime](https://github.com/sano-jin/dhl-alpha/tree/main/runtime):
+  309 LOC
+    - 実行時処理系
 
 ### Utility
-- util: 87 LOC
+- [util](https://github.com/sano-jin/dhl-alpha/tree/main/util):
+  87 LOC
     - 共用モジュール
-
 

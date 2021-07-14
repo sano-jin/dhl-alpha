@@ -15,13 +15,15 @@
 > 「メモリ安全」であることを確かめている
 
 
+
 ## プログラム構成
 
-全部で 822 LOC
+- 全部で 822 LOC
+- [ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
 
-[ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
 
-### [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler)
+### [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler): 426 LOC
+コンパイラ
 
 - [parser](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/parser):
   105 LOC
@@ -33,13 +35,13 @@
   182 LOC
     - 中間命令列を生成する
 
-### Runtime
-- [runtime](https://github.com/sano-jin/dhl-alpha/tree/main/runtime):
-  309 LOC
-    - 実行時処理系
 
-### Utility
-- [util](https://github.com/sano-jin/dhl-alpha/tree/main/util):
-  87 LOC
-    - 共用モジュール
+### [Runtime](https://github.com/sano-jin/dhl-alpha/tree/main/runtime): 309 LOC
+
+実行時処理系
+
+
+### [Util](https://github.com/sano-jin/dhl-alpha/tree/main/util): 87 LOC
+
+共用モジュール
 

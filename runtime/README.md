@@ -1,5 +1,5 @@
-# VM
-_Virtual Machine_
+# Runtime
+_Runtime environment_
 
 
 - [vm.ml](vm.ml)

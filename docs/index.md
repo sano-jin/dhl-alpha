@@ -1,6 +1,6 @@
 # dhl-alpha
 
-_ミニマルなグラフ書き換え言語のコンパイラ及びランタイム_
+[_ミニマルなグラフ書き換え言語のコンパイラ及びランタイム_](https://github.com/sano-jin/dhl-alpha)
 
 [![logo](./DHL-logo-alpha.svg)](https://github.com/sano-jin/dhl-alpha)
 

@@ -22,26 +22,20 @@
 - [ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
 
 
-### [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler): 426 LOC
-コンパイラ
 
-- [parser](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/parser):
-  105 LOC
-    - 字句解析・構文解析を行う
-- [analyzer](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/analyzer):
-  139 LOC
-    - 意味解析を行う
-- [generator](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/generator):
-  182 LOC
-    - 中間命令列を生成する
+-  [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler): 426 LOC
+    - [parser](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/parser):
+      105 LOC
+        - 字句解析・構文解析を行う
+    - [analyzer](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/analyzer):
+      139 LOC
+        - 意味解析を行う
+    - [generator](https://github.com/sano-jin/dhl-alpha/tree/main/compiler/generator):
+      182 LOC
+      - 中間命令列を生成する
+	  
+-  [Runtime](https://github.com/sano-jin/dhl-alpha/tree/main/runtime): 309 LOC
 
+-  [Util](https://github.com/sano-jin/dhl-alpha/tree/main/util): 87 LOC
 
-### [Runtime](https://github.com/sano-jin/dhl-alpha/tree/main/runtime): 309 LOC
-
-実行時処理系
-
-
-### [Util](https://github.com/sano-jin/dhl-alpha/tree/main/util): 87 LOC
-
-共用モジュール
 

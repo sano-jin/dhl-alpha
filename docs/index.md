@@ -29,8 +29,8 @@
 - analyzer: 139 LOC
     - 意味解析を行う
 - generator: 182 LOC
-    - 中間命令列を生成する
-	- [中間命令列の一覧](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/Generator__/Instruction/index.html)
+	- [中間命令列](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/Generator__/Instruction/index.html)
+	  を生成する
 
 ### VM
 - vm: 309 LOC

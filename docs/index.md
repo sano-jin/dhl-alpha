@@ -16,11 +16,11 @@
 
 
 
-## プログラム構成
+## プログラム概要
 
-- 全部で 822 LOC
-- [ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
+全部で 822 LOC
 
+[ocamldoc により生成したドキュメント](https://sano-jin.github.io/dhl-alpha/ocamldoc/dhl/index.html)
 
 
 -  [Compiler](https://github.com/sano-jin/dhl-alpha/tree/main/compiler): 426 LOC

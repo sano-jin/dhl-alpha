@@ -1,0 +1,6 @@
+0: a. b. c. d(e, f(g, a))
+1: a. c. d. d(e, f(g, a))
+2: a. c. d(e, f(g, a)). f(e)
+3: a. c. f(e). f(e, f(g, a))
+4: a(f, f, f, f). c. f(e). f(e, f(g, a))
+Final state: a(f, f, f, f). c. f(e). f(e, f(g, a))

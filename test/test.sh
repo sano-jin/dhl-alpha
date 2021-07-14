@@ -15,6 +15,7 @@ test test2
 test test3
 test test4
 test test5
+test test6
 
 echo "OK"
 

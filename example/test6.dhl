@@ -1,4 +1,5 @@
 a, b, c, d(e, f(g, a)).
 b :- d.
 d :- f(e).
-
+d(X, Y) :- f(X, Y).
+a :- a(f, f, f, f)

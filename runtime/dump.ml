@@ -1,4 +1,4 @@
-(** Debug 用の Dumper *)
+(** Dumper fot debugging purpose *)
 
 open Util
 open Eval

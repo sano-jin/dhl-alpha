@@ -1,11 +1,11 @@
-(** analyzer.ml *)
+(** Semantic analyzer *)
 
 include Breakdown
        
   
 
 (** semantic analyzer
-    - Obtains semantic graph from the given AST
+    @return semantic graph obtained from the given AST
  *)
 let sem_graph_of proc = 
   match breakdown proc with

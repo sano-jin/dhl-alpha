@@ -1,4 +1,4 @@
-(** generator.ml *)
+(** Generates intermediate codes from the given semantic graph *)
 
 open Analyzer
 open Util

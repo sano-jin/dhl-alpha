@@ -1,7 +1,6 @@
-(** vm.ml *)
+(** Virtual machine *)
 
 open Util
-(* open Array *)
        
 
 
@@ -72,7 +71,7 @@ let rec traverse (ref_count: int) node_ref =
 
 
 		       
-(** Resolve indirections in an atom list
+(** Resolve indirections and clean up the given atom list.
     Supposed to be called in the end of the program execution.
  *)
 let clean_atom_list atom_list =

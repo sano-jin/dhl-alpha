@@ -1,4 +1,0 @@
-(library
- (name eval)
- (public_name dhl.vm)
- (libraries dhl.util dhl.compiler))

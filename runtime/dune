@@ -1,4 +1,4 @@
 (library
  (name main)
  (public_name dhl.runtime)
- (libraries dhl.util dhl.compiler dhl.vm))
+ (libraries dhl.util dhl.compiler))

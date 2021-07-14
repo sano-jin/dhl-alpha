@@ -30,17 +30,6 @@ let pair x y = (x, y)
 let swap (x, y) = (y, x)
 
 
-(** triple の操作のためのコンビネータ 
-    - いらないかも
-*)
-
-(** *)
-let fst3 (a, _, _) = a
-let snd3 (_, b, _) = b
-let thd3 (_, _, c) = c
-
-		 
-
 (** compositional functions *)
 
 (** *)
@@ -52,9 +41,7 @@ let (<...) f g = fun x y z -> f (g x y z)
 
 (** either3 *)
 type ('a, 'b, 'c) either3 =
-  | Left3 of 'a
-  | Middle3 of 'b
-  | Right3 of 'c
+    Left3 of 'a | Middle3 of 'b | Right3 of 'c
 
 
 (** [partition_map] for [Either3] type *)
@@ -76,7 +63,6 @@ let ( let* ) = Option.bind
 
 
 let (<$>) = Option.map
-let (<&>) x f = Option.map f x
 let ( let+ ) x f = Option.map f x
 
 
@@ -113,8 +99,6 @@ let rec foldM f acc = function
 *)
 let set_minus l r = List.filter (not <. flip List.mem r) l
 let set_minus_q l r = List.filter (not <. flip List.memq r) l
-let set_union_q l r = set_minus_q l r @ r
-let set_unions_q ls = List.fold_left set_union_q [] ls
 let sym_diff l r = set_minus l r @ set_minus r l
 
 
@@ -182,14 +166,6 @@ let rec update_assc_opt pred f fallback = function
 
 (** 参照型のためのコンビネータ *)
 let update_ref f r = r := f !r
-
-(** 参照型の整数をインクリメントした後に，元の値を返す
-    - いらないかも
- *)			    
-let (!++) r = let i = !r in incr r; i
-			       
-
-
 
     
 

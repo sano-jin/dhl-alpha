@@ -50,9 +50,9 @@ let check_ind local_indegs reg_tbl reg_i = function
      let check_indeg = CheckIndeg (reg_i, List.assoc x local_indegs) in
      let reg_tbl, insts = 
        check_atom (p, xs) {reg_tbl with local2reg_i = insert x reg_i reg_tbl.local2reg_i} reg_i
-	 (* if x is the key of `addr` in `reg_tbl.free2addr`, then the `addr` should be equal to `node_ref`.
-	    Since is the `x` is in the `reg_tbl.free2addr`, then we should have conducted dereference hence
-	    the `node_ref` is lookuped from the `reg_tbl.free2addr` in the former phase (`try_deref` in `find_atoms`).        
+	 (* if [x] is the key of [addr] in [reg_tbl.free2addr], then the [addr] should be equal to [node_ref].
+	    Since is the [x] is in the [reg_tbl.free2addr], then we should have conducted dereference hence
+	    the [node_ref] is lookuped from the [reg_tbl.free2addr] in the former phase ([try_deref] in [find_atoms]).        
 	  *)
      in reg_tbl, check_indeg::insts
   | BFreeInd (x, (p, xs)) -> check_atom (p, xs)  {reg_tbl with free2reg_i = insert x reg_i reg_tbl.free2reg_i} reg_i 

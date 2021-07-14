@@ -141,7 +141,7 @@ let rec insert x v = function
 
 
 
-(** A helper function for `collect_indeg_arg` and `collect_indeg` *)					
+(** A helper function for [collect_indeg_arg] and [collect_indeg] *)					
 let rec update fallback f x = function
   | [] -> [x, fallback ()]
   | (y, v) as h::t ->

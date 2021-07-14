@@ -48,7 +48,7 @@ let main () =
   | [] -> failwith @@ "no input file"
   | (_::_::_) -> failwith @@ "too many files"
   | [file_name] ->
-     let dumper = if !verbose then Debug_vm.dbg_dump else Dump.dump in
+     let dumper = if !verbose then Debug_vm.dbg_dump else Pretty.dump in
      let tracer = if !trace
 		  then fun i atoms -> print_endline @@ string_of_int i ^ ": " ^ dumper atoms
 		  else fun _ _ -> ()

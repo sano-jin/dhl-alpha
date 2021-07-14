@@ -1,4 +1,4 @@
-(** dump.ml *)
+(** Pretty printer *)
 
 open Util
 open Eval
@@ -10,6 +10,8 @@ let get_link_name ((ref2link_id, link_id) as env) node_ref =
     match List.assq_opt node_ref ref2link_id with
     | None -> (((node_ref, link_id)::ref2link_id, succ link_id), link_id)
     | Some i -> (env, i)
+
+
 
 let rec dump_arg ((dumped_nodes, addr_env) as env) node_ref =
   if List.memq node_ref dumped_nodes || fst !node_ref <> 1 
@@ -34,6 +36,7 @@ and dump_atom is_top_level ((dumped_nodes, addr_env) as env) node_ref =
      let (env, xs) = List.fold_left_map dump_arg (first (List.cons node_ref) env) @@ Array.to_list xs in
      (env, p ^ if xs = [] then ""
 	       else "(" ^ String.concat ", " xs ^ ")")
+
      
 
 let dump_ind ((dumped_nodes, addr_env) as env) node_ref =
@@ -45,6 +48,7 @@ let dump_ind ((dumped_nodes, addr_env) as env) node_ref =
 	let (addr_env, link) = get_link_name addr_env node_ref in
 	let env = second (const addr_env) env in
 	second ((^) @@ link ^ " -> ") @@ dump_atom true env node_ref 
+
 
 
 (** A helper function for `tpl_sort` 
@@ -65,9 +69,23 @@ let rec visit (l, visited) node_ref =
 (** Topological sort *)
 let tpl_sort = fst <. List.fold_left visit ([], []) 
 
+
+
+(** functor でソートする *)
+let functor_sort =
+  let get_functor = second Array.length <. deref_symbol_atom in
+  let compare_node_refs n1 n2 =
+    let (p1, arity1), (p2, arity2) = get_functor n1, get_functor n2 in
+    let p1_p2 = String.compare p2 p1 in
+    if p1_p2 = 0 then arity2 - arity1 else p1_p2
+  in    
+  List.sort compare_node_refs
+
+  
 (** Pretty printer for printing nodes *)
 let dump =
   String.concat ". "
   <. List.filter_map id <. snd <. List.fold_left_map dump_ind ([], ([], 0)) 
   <. tpl_sort
+  <. functor_sort
 		      

@@ -37,3 +37,5 @@ jobs:
       - run: opam exec -- dune runtest
 
       - run: test/test-colorless.sh
+
+      - run: script/gen_docs.sh
